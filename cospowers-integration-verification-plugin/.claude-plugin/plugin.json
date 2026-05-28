@@ -7,7 +7,7 @@
     "name": "Sangfor"
   },
   "homepage": "https://github.com/yhangf/csc-plugins",
-  "repository": "https://github.com/yhangf/csc-plugins",
+  "repository": "git@github.com:yhangf/csc-plugins.git",
   "license": "MIT",
   "skills": "./skills/",
   "agents": "./agents/"
