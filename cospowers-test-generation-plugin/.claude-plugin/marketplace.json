@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-test-generation-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-test-generation",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}

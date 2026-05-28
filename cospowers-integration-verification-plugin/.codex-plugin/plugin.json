@@ -1,0 +1,11 @@
+{
+  "name": "cospowers-integration-verification",
+  "description": "AI 驱动的集成验证插件：执行集成测试、回归验证、契约验证、发布前检查和分支收尾。",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sangfor"
+  },
+  "homepage": "https://github.com/yhangf/csc-plugins",
+  "repository": "https://github.com/yhangf/csc-plugins",
+  "license": "MIT"
+}

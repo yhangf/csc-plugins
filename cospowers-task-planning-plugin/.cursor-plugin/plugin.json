@@ -1,0 +1,11 @@
+{
+  "name": "cospowers-task-planning",
+  "description": "AI 驱动的任务拆解插件：将需求或设计拆解为实现计划、任务图、里程碑和执行策略。",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sangfor"
+  },
+  "homepage": "https://github.com/yhangf/csc-plugins",
+  "repository": "https://github.com/yhangf/csc-plugins",
+  "license": "MIT"
+}

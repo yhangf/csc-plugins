@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-tdd-development-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-tdd-development",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}

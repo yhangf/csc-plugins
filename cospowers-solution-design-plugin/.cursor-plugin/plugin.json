@@ -1,0 +1,11 @@
+{
+  "name": "cospowers-solution-design",
+  "description": "AI 驱动的方案设计插件：从需求、PRD 或现有系统上下文生成系统设计、子系统设计和 API 契约。",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sangfor"
+  },
+  "homepage": "https://github.com/yhangf/csc-plugins",
+  "repository": "https://github.com/yhangf/csc-plugins",
+  "license": "MIT"
+}

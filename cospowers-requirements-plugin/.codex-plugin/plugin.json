@@ -1,0 +1,11 @@
+{
+  "name": "cospowers-requirements",
+  "description": "AI 驱动的需求梳理插件：将原始想法、PRD、issue、需求变更转化为结构化需求和系统需求。",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sangfor"
+  },
+  "homepage": "https://github.com/yhangf/csc-plugins",
+  "repository": "https://github.com/yhangf/csc-plugins",
+  "license": "MIT"
+}

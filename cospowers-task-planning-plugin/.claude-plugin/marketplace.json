@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-task-planning-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-task-planning",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}

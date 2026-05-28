@@ -1,0 +1,28 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "integration-test-report": "templates/integration-test-report-template.md",
+    "regression-report": "templates/regression-report-template.md",
+    "contract-verification-report": "templates/contract-verification-report-template.md",
+    "release-readiness": "templates/release-readiness-template.md",
+    "verification-report": "templates/verification-report-template.md"
+  },
+  "rules": {
+    "coding-standards": "rules/coding-standards/",
+    "testing-standards": "rules/testing-standards/",
+    "process": "rules/process/",
+    "design-review": "rules/design-review/",
+    "dfx": "rules/dfx/"
+  },
+  "evaluators": {
+    "doc-quality": "doc-quality-evaluator"
+  },
+  "env": {
+    "GITLAB_TOKEN": null,
+    "GITLAB_TOKEN_PATH": null,
+    "DAEDALUS_URL": null,
+    "DAEDALUS_API_KEY": null
+  }
+}

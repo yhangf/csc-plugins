@@ -1,0 +1,13 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "implementation-plan": "templates/implementation-plan-template.md",
+    "task-graph": "templates/task-graph-template.md",
+    "execution-strategy": "templates/execution-strategy-template.md"
+  },
+  "rules": {
+    "process": "rules/process/"
+  }
+}

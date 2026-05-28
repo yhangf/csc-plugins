@@ -1,0 +1,16 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "test-strategy": "templates/test-strategy-template.md",
+    "test-case": "templates/test-case-template.md",
+    "unit-test": "templates/unit-test-template.md",
+    "integration-test": "templates/integration-test-template.md",
+    "contract-test": "templates/contract-test-template.md",
+    "regression-test": "templates/regression-test-template.md"
+  },
+  "rules": {
+    "testing-standards": "rules/testing-standards/"
+  }
+}

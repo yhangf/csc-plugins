@@ -1,0 +1,23 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "system-design": "templates/system-design-template.md",
+    "subsystem-design": "templates/subsystem-design-template.md",
+    "micro-design": "templates/micro-design-template.md",
+    "openapi": "templates/openapi-template.yaml",
+    "asyncapi": "templates/asyncapi-template.yaml"
+  },
+  "rules": {
+    "design-review": "rules/design-review/",
+    "design-methods": "rules/design-methods/",
+    "business": "rules/business/",
+    "dfx": "rules/dfx/"
+  },
+  "evaluators": {
+    "sysdesign": "sysdesign-evaluator",
+    "subsystem": "subsystem-evaluator",
+    "doc-quality": "doc-quality-evaluator"
+  }
+}

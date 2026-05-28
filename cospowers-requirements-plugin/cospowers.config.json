@@ -1,0 +1,19 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "ai-requirement": "templates/user-requirement-template.md",
+    "system-requirement": "templates/system-requirement-template.md",
+    "requirements-review": "templates/requirements-review-template.md",
+    "requirements-change-impact": "templates/requirements-change-impact-template.md"
+  },
+  "rules": {
+    "requirement-checklists": "rules/requirement-checklists/",
+    "dfx": "rules/dfx/"
+  },
+  "evaluators": {
+    "aireq": "aireq-evaluator",
+    "sysreq": "sysreq-evaluator"
+  }
+}

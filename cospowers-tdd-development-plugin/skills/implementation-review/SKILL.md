@@ -1,0 +1,42 @@
+---
+name: implementation-review
+description: Local TDD 编码 Plugin skill for AI 驱动的 TDD 编码插件：基于任务、测试、issue 或 bug 执行测试优先开发、调试、代码检查和提交。
+---
+
+# Implementation Review
+
+## Skill 标识
+
+- Skill name: `implementation-review`
+- Plugin: `cospowers-tdd-development`
+- Scope: TDD 编码 Plugin
+- Entry skill: `tdd-implementation`
+
+## Purpose
+
+Use this skill within the independent `cospowers-tdd-development` plugin. It supports AI 驱动的 TDD 编码插件：基于任务、测试、issue 或 bug 执行测试优先开发、调试、代码检查和提交。
+
+## Operating Boundaries
+
+- Do not route through or require the old monolithic `brainstorming` skill.
+- Do not require any other cospowers split plugin to be installed.
+- Use only this plugin's local `templates/`, `rules/`, `skills/`, and `cospowers.config.json`.
+- Accept standard handoff documents when provided, but also work from direct user input.
+
+## Workflow
+
+1. Classify the user's input for this plugin's scope.
+2. Reuse local skills and local assets only.
+3. Produce or update the expected artifacts.
+4. Record assumptions, traceability, risks, and next steps.
+5. Ask the user when a material decision is ambiguous.
+
+## Expected Outputs
+
+- `code changes`
+- `unit tests`
+- `passing local tests`
+- `debugging report`
+- `code compliance report`
+- `code review report`
+- `git commit / branch changes`

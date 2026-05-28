@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-requirements-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-requirements",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}

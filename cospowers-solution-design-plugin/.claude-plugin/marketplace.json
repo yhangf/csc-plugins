@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-solution-design-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-solution-design",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}

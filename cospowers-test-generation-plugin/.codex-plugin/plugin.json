@@ -1,0 +1,11 @@
+{
+  "name": "cospowers-test-generation",
+  "description": "AI 驱动的测试生成插件：从需求、设计、计划、bug 或代码生成测试策略、测试用例和测试代码草稿。",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sangfor"
+  },
+  "homepage": "https://github.com/yhangf/csc-plugins",
+  "repository": "https://github.com/yhangf/csc-plugins",
+  "license": "MIT"
+}

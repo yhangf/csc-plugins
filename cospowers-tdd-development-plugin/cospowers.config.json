@@ -1,0 +1,23 @@
+{
+  "project": {
+    "product": null
+  },
+  "templates": {
+    "tdd-cycle": "templates/tdd-cycle-template.md",
+    "debugging-report": "templates/debugging-report-template.md",
+    "commit-message": "templates/commit-message-template.md"
+  },
+  "rules": {
+    "coding-standards": "rules/coding-standards/",
+    "testing-standards": "rules/testing-standards/",
+    "process": "rules/process/",
+    "commit-standards": "rules/commit-standards/",
+    "code-review-rules": "rules/code-review-rules/"
+  },
+  "env": {
+    "GITLAB_TOKEN": null,
+    "GITLAB_TOKEN_PATH": null,
+    "DAEDAL_URL": null,
+    "DAEDALUS_API_KEY": null
+  }
+}

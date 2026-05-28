@@ -1,0 +1,13 @@
+{
+  "name": "cospowers-integration-verification-marketplace",
+  "plugins": [
+    {
+      "name": "cospowers-integration-verification",
+      "version": "0.1.7",
+      "source": "./",
+      "author": {
+        "name": "Sangfor"
+      }
+    }
+  ]
+}
