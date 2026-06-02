@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "ai-workers-requirements": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-requirements-plugin\\"
+      }
+    },
+    "ai-workers-design": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-solution-design-plugin\\"
+      }
+    },
+    "ai-workers-plan": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-task-planning-plugin\\"
+      }
+    },
+    "ai-workers-tdd": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-tdd-development-plugin\\"
+      }
+    },
+    "ai-workers-test": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-test-generation-plugin\\"
+      }
+    },
+    "ai-workers-integration-verification": {
+      "source": {
+        "source": "directory",
+        "path": "C:\\Users\\SXF-Admin\\Desktop\\test-ai-workers\\.claude\\plugins\\cospowers-integration-verification-plugin\\"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "cospowers-requirements@ai-workers-requirements": true,
+    "cospowers-solution-design@ai-workers-design": true,
+    "cospowers-task-planning@ai-workers-plan": true,
+    "cospowers-tdd-development@ai-workers-tdd": true,
+    "cospowers-test-generation@ai-workers-test": true,
+    "cospowers-integration-verification@ai-workers-integration-verification": true
+  }
+}
