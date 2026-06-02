@@ -1,51 +1,107 @@
-# cospowers Integration Verification（集成测试 Plugin）
+# cospowers Integration Verification（集成验证 Plugin）
 
-AI 驱动的集成验证插件：执行集成测试、回归验证、契约验证、发布前检查和分支收尾。
+这个插件用于在功能完成后做集成测试、回归验证、契约验证、端到端验证、发布前检查和最终完成确认。
 
-## 什么时候使用
+## 这个插件能做什么
 
-当任务属于 **集成测试 Plugin** 范围时，直接调用入口 skill：
+- 运行或规划集成测试，确认多个模块、服务或组件组合在一起后能正常工作。
+- 做回归验证，确认新改动没有破坏已有功能或已修复问题。
+- 做契约验证，确认 API、服务接口、消息格式或事件定义仍然符合约定。
+- 做端到端（E2E）验证，从用户或业务流程角度检查完整链路是否可用。
+- 做发布前检查，评估代码、测试、文档、风险和分支状态是否具备合并或发布条件。
+- 在宣布完成前收集证据，避免只凭感觉说“已经好了”。
+- 协助收尾开发分支，包括最终检查、代码审查准备、调试验证失败和必要时的结构化提交。
+
+## 适合什么时候使用
+
+- 功能已经开发完成，需要确认整体能不能正常工作。
+- 准备合并分支、发版或交付前，需要做最终验证。
+- API、消息格式或服务契约发生变化，需要确认调用方和提供方仍然匹配。
+- 修复 bug 后，需要确认旧问题没有复现，相关功能没有被破坏。
+- 测试失败或验证不通过，需要系统化定位原因。
+- 需要整理集成验证报告、发布就绪报告或最终验证结论。
+
+## 输入和输出
+
+### 可以输入什么
+
+- 已完成的功能分支、实现总结、变更说明或 pull request 描述。
+- 测试命令、测试报告、失败日志、CI 输出或复现步骤。
+- API 契约、OpenAPI/AsyncAPI 文档、消息格式或接口约定。
+- 需求、设计、实施计划、测试用例或发布检查清单。
+- 当前仓库上下文、代码变更、配置变更或部署说明。
+- 验证目标，例如“只做回归验证”“检查发布就绪”“验证 E2E 流程”。
+
+### 会输出什么
+
+- `docs/verification/integration-test-report.md`：集成测试报告，说明测试范围、执行结果和问题。
+- `docs/verification/regression-report.md`：回归验证报告，说明已有功能和历史问题是否仍然正常。
+- `docs/verification/contract-verification-report.md`：契约验证报告，说明接口、消息或服务契约是否匹配。
+- `docs/verification/release-readiness-report.md`：发布就绪报告，说明是否具备合并、发布或交付条件。
+- `docs/verification/final-verification-report.md`：最终验证报告，汇总验证证据、结论、风险和未完成事项。
+- 必要时输出调试结论、代码规范检查结果、代码审查材料或分支收尾建议。
+
+## 怎么使用
+
+入口 skill 是：
 
 ```text
 integration-verification
 ```
 
-## 独立性
+推荐步骤：
 
-本插件可单独安装和运行。它可以消费上游插件产出的标准文档，但不要求上游插件存在；如果没有标准文档，也可以从用户描述、issue、PRD、bug report 或当前仓库上下文开始工作。
+1. 准备输入材料。可以提供功能分支说明、测试命令、测试报告、API 契约、失败日志或发布检查清单。
+2. 调用 `integration-verification`，说明你要做集成测试、回归验证、契约验证、E2E 验证，还是发布前检查。
+3. 根据插件追问补充验证范围，例如哪些模块必须覆盖、哪些测试命令可运行、哪些环境或外部依赖不可用。
+4. 插件会收集验证证据，运行或规划必要检查，并在失败时协助定位原因。
+5. 查看验证报告和最终结论，确认是否可以合并、发布、交付，或是否还有阻塞问题。
 
-## 主要 Skills
+## Skills 总览（共 15 个）
 
-- `verification-before-completion`
-- `finishing-a-development-branch`
-- `code-compliance-check`
-- `requesting-code-review`
-- `systematic-debugging`
-- `spec-commit`
-- `session-context`
-- `doc-quality-evaluator`
-- `integration-verification`
-- `integration-test-runner`
-- `regression-verification`
-- `contract-verification`
-- `e2e-verification`
-- `release-readiness-check`
-- `using-integration-verification-plugin`
+| Skill | 对应功能 | 适合什么时候用 |
+| --- | --- | --- |
+| `integration-verification` | 入口 skill，执行或规划最终集成验证。 | 不确定该用哪个验证 skill 时，从这里开始。 |
+| `integration-test-runner` | 运行或协调集成测试。 | 需要确认多个模块、服务或组件组合后是否正常时使用。 |
+| `regression-verification` | 验证旧行为没有被破坏。 | 新功能、重构或 bug 修复后，需要确认已有功能仍然正常时使用。 |
+| `contract-verification` | 验证 API、服务或消息契约。 | 接口、事件、请求响应格式或服务边界发生变化时使用。 |
+| `e2e-verification` | 验证端到端业务流程。 | 需要从用户视角检查完整链路是否可用时使用。 |
+| `release-readiness-check` | 检查是否具备合并、发布或交付条件。 | 准备发版、合并分支或交付前使用。 |
+| `verification-before-completion` | 在宣布完成前收集验证证据。 | 需要证明任务确实完成，而不是只给口头结论时使用。 |
+| `finishing-a-development-branch` | 协助收尾开发分支。 | 分支开发接近完成，需要最终检查、整理和收尾时使用。 |
+| `code-compliance-check` | 检查代码是否符合本地规范。 | 验证阶段需要确认代码、测试和流程规则是否满足时使用。 |
+| `requesting-code-review` | 准备代码审查请求。 | 准备让别人 review，或需要整理变更说明、测试证据和风险点时使用。 |
+| `systematic-debugging` | 系统化定位验证失败原因。 | 集成测试、回归测试、E2E 或契约验证失败时使用。 |
+| `spec-commit` | 在用户要求时生成结构化提交。 | 用户明确要求 commit，并希望提交信息符合规范时使用。 |
+| `doc-quality-evaluator` | 评估文档质量。 | 需要检查验证报告、设计文档或交付文档是否清晰完整时使用。 |
+| `session-context` | 整理或总结当前验证会话上下文。 | 会话较长，需要保留背景、决策、证据和未解决问题。 |
+| `using-integration-verification-plugin` | 解释本插件的使用方式和技能边界。 | 不确定本插件能做什么或如何开始时使用。 |
 
-## 输出交付物
+## 推荐工作流
 
-- `docs/verification/integration-test-report.md`
-- `docs/verification/regression-report.md`
-- `docs/verification/contract-verification-report.md`
-- `docs/verification/release-readiness-report.md`
-- `docs/verification/final-verification-report.md`
+本插件位于完整研发链路的第六步：集成验证。它通常消费代码变更、测试结果、契约文档和发布检查清单，并产出验证报告和发布就绪结论。
 
-## 交接到下一插件
+推荐完整流程：
 
-建议下一步：`final delivery / PR / MR / release readiness decision`。
+1. 需求梳理：`requirements-intake`
+2. 方案设计：`solution-design`
+3. 任务拆解：`task-planning`
+4. 测试生成：`test-generation`
+5. TDD 编码：`tdd-implementation`
+6. 集成验证：`integration-verification`
 
-交接方式是标准文档文件，而不是隐式 skill 依赖。即使下一插件未安装，也可以把本插件输出文件手动提供给其他流程。
+本插件可以单独使用。如果你已经有代码变更、测试报告或发布检查清单，可以把它们作为输入；如果没有，也可以直接提供 bug 修复说明、功能分支描述、失败日志或当前仓库上下文。它可能运行测试、检查分支状态或准备审查材料，因此请在请求中说明可运行的验证范围和是否允许创建提交。
 
-## 注意
+## 常见使用示例
 
-本插件不再使用旧版全局中央路由。不要先调用 `brainstorming`；请直接调用 `integration-verification`。
+```text
+请对当前分支做集成验证，并生成最终验证报告。
+```
+
+```text
+请根据 openapi.yaml 做契约验证，确认接口变更是否安全。
+```
+
+```text
+这个功能准备合并了，请做发布就绪检查并指出阻塞问题。
+```

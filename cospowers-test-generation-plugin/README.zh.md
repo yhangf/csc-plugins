@@ -1,47 +1,101 @@
 # cospowers Test Generation（测试生成 Plugin）
 
-AI 驱动的测试生成插件：从需求、设计、计划、bug 或代码生成测试策略、测试用例和测试代码草稿。
+这个插件用于根据需求、设计、实施计划、bug 描述或已有代码生成测试策略、测试用例、验收测试、回归测试、边界测试和测试代码草稿。
 
-## 什么时候使用
+## 这个插件能做什么
 
-当任务属于 **测试生成 Plugin** 范围时，直接调用入口 skill：
+- 制定测试策略，说明要测什么、怎么测、重点风险在哪里。
+- 生成详细测试用例，包括前置条件、操作步骤、输入数据和预期结果。
+- 生成验收测试，帮助确认功能是否满足用户视角的需求。
+- 生成回归测试，防止已修复的问题或已有功能被新改动破坏。
+- 生成边界值、异常输入、空值、权限、并发等特殊场景测试。
+- 审查已有测试覆盖情况，指出缺少哪些测试。
+- 生成单元测试、集成测试、契约测试、gRPC 测试或通用测试代码草稿。
+
+## 适合什么时候使用
+
+- 你已经有需求或设计，希望先生成测试策略和测试用例。
+- 你准备开始 TDD 开发，需要先明确要写哪些测试。
+- 你修复了 bug，希望生成回归测试防止问题再次出现。
+- 你已有代码或测试，想检查测试覆盖是否足够。
+- 你需要测试代码草稿，但还希望人工确认后再放进项目。
+
+## 输入和输出
+
+### 可以输入什么
+
+- 需求文档，例如 `docs/requirements/system-requirements.md`。
+- 设计文档，例如 `docs/design/system-design.md`、API 契约或子系统设计。
+- 实施计划，例如 `docs/plans/implementation-plan.md`。
+- bug report、失败日志、用户反馈或历史问题描述。
+- 已有源代码、测试代码、接口定义或当前仓库上下文。
+- 测试目标，例如“只生成验收测试”“补充边界场景”“检查覆盖率缺口”。
+
+### 会输出什么
+
+- `docs/tests/test-strategy.md`：测试策略，说明测试范围、测试层级、重点风险和执行方式。
+- `docs/tests/test-cases.md`：详细测试用例，包含输入、步骤和预期结果。
+- `docs/tests/acceptance-tests.md`：验收测试，从用户行为角度验证功能是否完成。
+- `docs/tests/regression-tests.md`：回归测试，验证旧行为或已修复问题没有被破坏。
+- `docs/tests/coverage-review.md`：测试覆盖审查报告，指出缺失场景和改进建议。
+- `docs/tests/generated-test-code/`：生成的测试代码草稿或模板。
+
+## 怎么使用
+
+入口 skill 是：
 
 ```text
 test-generation
 ```
 
-## 独立性
+推荐步骤：
 
-本插件可单独安装和运行。它可以消费上游插件产出的标准文档，但不要求上游插件存在；如果没有标准文档，也可以从用户描述、issue、PRD、bug report 或当前仓库上下文开始工作。
+1. 准备输入材料。可以提供需求、设计、计划、bug 描述、API 契约或代码片段。
+2. 调用 `test-generation`，说明你想生成测试策略、测试用例、验收测试、回归测试，还是测试代码草稿。
+3. 根据插件追问补充测试范围，例如目标语言、测试框架、接口类型、关键风险和不需要覆盖的范围。
+4. 查看输出的测试文档或测试代码草稿，确认场景是否覆盖真实风险。
+5. 如果要继续推进，可以把测试用例交给 TDD 开发流程实现。
 
-## 主要 Skills
+## Skills 总览（共 10 个）
 
-- `test-code-generator`
-- `session-context`
-- `test-generation`
-- `test-strategy-generation`
-- `test-case-generation`
-- `acceptance-test-generation`
-- `regression-test-generation`
-- `edge-case-test-generation`
-- `test-coverage-review`
-- `using-test-generation-plugin`
+| Skill | 对应功能 | 适合什么时候用 |
+| --- | --- | --- |
+| `test-generation` | 入口 skill，从需求、设计、计划、bug 或代码生成测试策略、用例和测试代码草稿。 | 不确定该用哪个测试 skill 时，从这里开始。 |
+| `test-strategy-generation` | 生成测试策略。 | 需要决定测试范围、测试层级、重点风险和执行方式时使用。 |
+| `test-case-generation` | 生成详细测试用例。 | 需要具体步骤、输入数据和预期结果时使用。 |
+| `acceptance-test-generation` | 生成面向用户行为的验收测试。 | 需要验证功能是否满足用户需求和验收标准时使用。 |
+| `regression-test-generation` | 生成回归测试。 | 修复 bug 或改动已有功能后，防止旧问题复现时使用。 |
+| `edge-case-test-generation` | 生成边界和异常场景测试。 | 需要覆盖空值、极值、非法输入、权限、并发等特殊情况时使用。 |
+| `test-coverage-review` | 审查测试覆盖缺口。 | 已有测试但不确定是否覆盖充分时使用。 |
+| `test-code-generator` | 生成测试代码草稿或模板。 | 已明确测试场景，需要生成可改造的测试代码时使用。 |
+| `session-context` | 整理或总结当前测试生成会话上下文。 | 会话较长，需要保留背景、决策和未解决问题。 |
+| `using-test-generation-plugin` | 解释本插件的使用方式和技能边界。 | 不确定本插件能做什么或如何开始时使用。 |
 
-## 输出交付物
+## 推荐工作流
 
-- `docs/tests/test-strategy.md`
-- `docs/tests/test-cases.md`
-- `docs/tests/acceptance-tests.md`
-- `docs/tests/regression-tests.md`
-- `docs/tests/coverage-review.md`
-- `docs/tests/generated-test-code/`
+本插件位于完整研发链路的第四步：测试生成。它通常消费需求、设计或实施计划，并产出测试策略、测试用例和测试代码草稿。
 
-## 交接到下一插件
+推荐完整流程：
 
-建议下一步：`cospowers-tdd-development-plugin / tdd-implementation`。
+1. 需求梳理：`requirements-intake`
+2. 方案设计：`solution-design`
+3. 任务拆解：`task-planning`
+4. 测试生成：`test-generation`
+5. TDD 编码：`tdd-implementation`
+6. 集成验证：`integration-verification`
 
-交接方式是标准文档文件，而不是隐式 skill 依赖。即使下一插件未安装，也可以把本插件输出文件手动提供给其他流程。
+本插件可以单独使用。如果你已经有需求、设计或计划文档，可以把它们作为输入；如果没有，也可以直接提供 bug 描述、代码片段、接口文档或当前仓库上下文。后续插件不是硬依赖，你也可以把本插件输出的测试文档手动交给其他流程。
 
-## 注意
+## 常见使用示例
 
-本插件不再使用旧版全局中央路由。不要先调用 `brainstorming`；请直接调用 `test-generation`。
+```text
+请根据 docs/requirements/system-requirements.md 生成测试策略和测试用例。
+```
+
+```text
+请根据这个 bug report 生成回归测试，防止问题再次出现。
+```
+
+```text
+请审查现有测试覆盖，指出还缺哪些边界场景。
+```

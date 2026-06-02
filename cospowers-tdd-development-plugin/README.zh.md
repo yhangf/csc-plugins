@@ -1,50 +1,103 @@
 # cospowers TDD Development（TDD 编码 Plugin）
 
-AI 驱动的 TDD 编码插件：基于任务、测试、issue 或 bug 执行测试优先开发、调试、代码检查和提交。
+这个插件用于根据实施计划、测试用例、bug 描述或现有代码，按 TDD（测试驱动开发）方式完成编码、调试、规范检查和实现评审。
 
-## 什么时候使用
+## 这个插件能做什么
 
-当任务属于 **TDD 编码 Plugin** 范围时，直接调用入口 skill：
+- 按“先写失败测试 → 写最小实现让测试通过 → 安全重构”的 TDD 流程推进开发。
+- 根据实施计划逐步修改代码，并在每一步确认测试或验收条件。
+- 系统化调试失败测试、运行错误、异常日志或行为不符合预期的问题。
+- 检查代码是否符合本仓库的编码规范、测试规范、提交规范和评审规则。
+- 在适合时使用 subagent 或 git worktree，把复杂工作拆开并隔离处理。
+- 准备代码审查材料、实现评审结论或结构化提交信息。
+
+## 适合什么时候使用
+
+- 你已经有实施计划，希望开始真正修改代码。
+- 你已经有测试用例，希望按 TDD 流程实现功能。
+- 你有一个 failing test、bug report 或错误日志，需要定位并修复。
+- 你完成了部分实现，希望检查代码质量和完成度。
+- 你需要准备代码审查请求或在明确要求时创建提交。
+
+## 输入和输出
+
+### 可以输入什么
+
+- 实施计划，例如 `docs/plans/implementation-plan.md`。
+- 测试策略、测试用例或测试代码草稿。
+- bug report、失败测试、错误日志、堆栈信息或复现步骤。
+- 功能需求、issue、设计文档或当前仓库上下文。
+- 编码约束，例如必须保持兼容、不要改公共接口、只允许修改某些文件。
+- 明确指令，例如“只给实现方案”“直接改代码”“运行测试”“创建提交”。
+
+### 会输出什么
+
+- 代码变更：实现功能、修复 bug 或重构必要代码。
+- 单元测试或相关测试补充。
+- 本地测试结果，说明运行了什么命令以及结果如何。
+- debugging report：调试过程、根因和修复结果。
+- code compliance report：代码规范、测试规范或流程规范检查结果。
+- code review report：实现质量、风险和待处理问题评审。
+- 用户明确要求时的 git commit 或 branch/worktree 相关变更。
+
+## 怎么使用
+
+入口 skill 是：
 
 ```text
 tdd-implementation
 ```
 
-## 独立性
+推荐步骤：
 
-本插件可单独安装和运行。它可以消费上游插件产出的标准文档，但不要求上游插件存在；如果没有标准文档，也可以从用户描述、issue、PRD、bug report 或当前仓库上下文开始工作。
+1. 准备输入材料。可以提供实施计划、测试用例、bug 描述、失败日志或要修改的代码范围。
+2. 调用 `tdd-implementation`，说明你希望按 TDD 实现新功能、修复 bug、调试失败测试，还是检查实现质量。
+3. 明确操作边界，例如是否允许修改代码、是否需要运行测试、是否允许创建提交。
+4. 插件会按测试优先的方式推进：先确认或补充失败测试，再实现最小改动，最后重构和验证。
+5. 查看代码变更、测试结果和报告，确认是否满足需求和验收标准。
 
-## 主要 Skills
+## Skills 总览（共 12 个）
 
-- `test-driven-development`
-- `executing-plans`
-- `subagent-driven-development`
-- `systematic-debugging`
-- `code-compliance-check`
-- `requesting-code-review`
-- `using-git-worktrees`
-- `spec-commit`
-- `session-context`
-- `tdd-implementation`
-- `implementation-review`
-- `using-tdd-development-plugin`
+| Skill | 对应功能 | 适合什么时候用 |
+| --- | --- | --- |
+| `tdd-implementation` | 入口 skill，按测试驱动开发完成实现。 | 不确定该用哪个开发 skill 时，从这里开始。 |
+| `test-driven-development` | 指导红-绿-重构流程。 | 需要严格按 TDD 节奏新增功能或修复问题时使用。 |
+| `executing-plans` | 按实施计划逐步执行。 | 已有 `implementation-plan.md`，需要落地到代码时使用。 |
+| `subagent-driven-development` | 协调 subagent 开发。 | 任务较复杂，可以拆成多个独立执行单元时使用。 |
+| `systematic-debugging` | 系统化定位和修复问题。 | 有失败测试、错误日志、异常行为或复现步骤时使用。 |
+| `code-compliance-check` | 检查代码是否符合本地规范。 | 代码改完后，需要检查编码、测试和流程规则时使用。 |
+| `requesting-code-review` | 准备代码审查请求。 | 准备让别人 review，或需要整理变更说明和风险点时使用。 |
+| `using-git-worktrees` | 协助使用 git worktree。 | 需要并行开发、隔离实验或避免污染当前工作区时使用。 |
+| `spec-commit` | 在用户要求时生成结构化提交。 | 用户明确要求 commit，并希望提交信息符合规范时使用。 |
+| `implementation-review` | 审查实现质量和完成度。 | 想确认实现是否满足需求、测试是否充分、风险是否可控时使用。 |
+| `session-context` | 整理或总结当前编码会话上下文。 | 会话较长，需要保留背景、决策和未解决问题。 |
+| `using-tdd-development-plugin` | 解释本插件的使用方式和技能边界。 | 不确定本插件能做什么或如何开始时使用。 |
 
-## 输出交付物
+## 推荐工作流
 
-- `code changes`
-- `unit tests`
-- `passing local tests`
-- `debugging report`
-- `code compliance report`
-- `code review report`
-- `git commit / branch changes`
+本插件位于完整研发链路的第五步：TDD 编码。它通常消费实施计划和测试用例，并产出代码变更、测试结果和实现评审信息。
 
-## 交接到下一插件
+推荐完整流程：
 
-建议下一步：`cospowers-integration-verification-plugin / integration-verification`。
+1. 需求梳理：`requirements-intake`
+2. 方案设计：`solution-design`
+3. 任务拆解：`task-planning`
+4. 测试生成：`test-generation`
+5. TDD 编码：`tdd-implementation`
+6. 集成验证：`integration-verification`
 
-交接方式是标准文档文件，而不是隐式 skill 依赖。即使下一插件未安装，也可以把本插件输出文件手动提供给其他流程。
+本插件可以单独使用。如果你已经有实施计划或测试用例，可以把它们作为输入；如果没有，也可以直接提供 issue、bug 描述、失败测试或当前仓库上下文。它可能修改仓库代码、运行测试或准备提交，因此请在请求中说明你希望“只分析”“修改代码”“运行验证”还是“创建提交”。
 
-## 注意
+## 常见使用示例
 
-本插件不再使用旧版全局中央路由。不要先调用 `brainstorming`；请直接调用 `tdd-implementation`。
+```text
+请根据 docs/plans/implementation-plan.md 按 TDD 流程实现这个功能。
+```
+
+```text
+这个测试失败了，请系统化调试并修复根因。
+```
+
+```text
+请检查当前实现是否符合计划和代码规范，不要创建提交。
+```
