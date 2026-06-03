@@ -18,8 +18,6 @@ Use this skill within the independent `cospowers-requirements` plugin. It suppor
 
 ## Operating Boundaries
 
-- Do not route through or require the old monolithic `brainstorming` skill.
-- Do not require any other cospowers split plugin to be installed.
 - Use only this plugin's local `templates/`, `rules/`, `skills/`, and `cospowers.config.json`.
 - Accept standard handoff documents when provided, but also work from direct user input.
 

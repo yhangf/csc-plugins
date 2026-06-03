@@ -64,4 +64,4 @@ Hand off to TDD development with generated test cases, test code drafts, target 
 
 ## Operating constraints
 
-Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, and examples unless the user provides external handoff documents or repository code. Do not depend on the old monolithic `brainstorming` router or `using-spec-developer`. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, and examples unless the user provides external handoff documents or repository code. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.

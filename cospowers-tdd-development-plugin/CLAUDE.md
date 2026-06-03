@@ -70,4 +70,4 @@ Hand off to integration verification with the code changes, tests added or updat
 
 ## Operating constraints
 
-Match code edits, test execution, branch/worktree operations, and commits to the user's authorization. Commits require an explicit user request. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `agents/`, and examples unless the user provides external handoff documents or repository code. Do not depend on the old monolithic `brainstorming` router or `using-spec-developer`. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+Match code edits, test execution, branch/worktree operations, and commits to the user's authorization. Commits require an explicit user request. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `agents/`, and examples unless the user provides external handoff documents or repository code. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.

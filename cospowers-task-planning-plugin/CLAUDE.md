@@ -63,4 +63,4 @@ Hand off to test generation when test strategy, test cases, or test code drafts 
 
 ## Operating constraints
 
-This plugin should generally produce plans and planning artifacts, not modify product code. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, and examples unless the user provides external handoff documents. Do not depend on the old monolithic `brainstorming` router or `using-spec-developer`. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+This plugin should generally produce plans and planning artifacts, not modify product code. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, and examples unless the user provides external handoff documents. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.

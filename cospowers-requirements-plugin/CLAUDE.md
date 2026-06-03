@@ -61,4 +61,4 @@ When requirements are complete enough, hand off to the solution-design stage wit
 
 ## Operating constraints
 
-Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, and examples unless the user provides external handoff documents. Do not depend on the old monolithic `brainstorming` router or `using-spec-developer`. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, and examples unless the user provides external handoff documents. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.

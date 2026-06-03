@@ -70,4 +70,4 @@ Hand off the final result with a clear pass/fail conclusion, evidence, unresolve
 
 ## Operating constraints
 
-Match command execution, branch operations, environment access, and commits to the user's authorization. Commits require an explicit user request. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, `agents/`, and examples unless the user provides external handoff documents or repository code. Do not depend on the old monolithic `brainstorming` router or `using-spec-developer`. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+Match command execution, branch operations, environment access, and commits to the user's authorization. Commits require an explicit user request. Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, `agents/`, and examples unless the user provides external handoff documents or repository code. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
