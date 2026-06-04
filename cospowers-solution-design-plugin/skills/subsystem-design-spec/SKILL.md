@@ -42,7 +42,7 @@ Before starting, read `cospowers.config.json` from the plugin root (2 levels abo
 
 - System design + OpenAPI spec exist and YOU need to write YOUR subsystem's implementation design
 - Each subsystem owner invokes this skill independently for their assigned subsystem(s)
-- Following `design-spec` in the end-to-end team project workflow
+- Continuing from system design and API contract artifacts produced by `design-spec` or another design process
 - User explicitly requests subsystem design document creation
 
 **Don't use when:**

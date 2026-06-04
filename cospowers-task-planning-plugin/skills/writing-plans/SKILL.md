@@ -32,7 +32,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - **Subsystem mode** (one plan per service): `docs/plans/YYYY-MM-DD-<project>/<feature-name>-<service-name>-plan.md`
 - (User preferences for plan location override this default)
 
-**Team Phase Workflow:** In end-to-end team projects, writing-plans receives input from the design phase. Two entry points exist:
+**Design Artifact Inputs:** When planning from design handoff artifacts, writing-plans supports two entry points:
 
 - **From `design-spec`**: Input is the system-level design document. Plan covers system-wide architecture implementation.
 - **From `subsystem-design-spec`**: Input is per-subsystem design document(s). Plan covers per-service implementation with service-level task splitting.

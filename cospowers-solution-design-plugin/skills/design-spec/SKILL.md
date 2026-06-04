@@ -48,7 +48,7 @@ Before starting, read `cospowers.config.json` from the plugin root (2 levels abo
 - System requirements exist and system-level design documentation is needed
 - Projects requiring formal design review compliance
 - User explicitly requests system design or OpenAPI spec creation
-- Following system-requirement-analysis in the end-to-end team project workflow
+- Continuing from system requirement artifacts that need system-level design
 
 **Don't use when:**
 - System requirements are not yet defined (use system-requirement-analysis first)

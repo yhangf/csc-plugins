@@ -41,7 +41,7 @@ Before starting, read `cospowers.config.json` from the plugin root (2 levels abo
 - User provides raw feature descriptions, PRDs, or verbal requirements
 - Enterprise or multi-service projects requiring formal requirement documents
 - User explicitly asks for requirement decomposition or analysis
-- Starting the end-to-end team project workflow (before system-requirement-analysis)
+- Preparing requirement artifacts for later system-requirement analysis or design work
 
 **Don't use when:**
 - Requirements are already structured (skip to system-requirement-analysis or requirements-intake)
