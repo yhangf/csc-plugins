@@ -24,10 +24,22 @@ Use this skill within the independent `cospowers-requirements` plugin. It suppor
 ## Workflow
 
 1. Classify the user's input for this plugin's scope.
-2. Reuse local skills and local assets only.
-3. Produce or update the expected artifacts.
-4. Record assumptions, traceability, risks, and next steps.
-5. Ask the user when a material decision is ambiguous.
+2. If the request is vague, mixed, or contains unresolved branches, enter clarification before artifact generation.
+3. Reuse local skills and local assets only.
+4. Produce or update the expected artifacts.
+5. Record assumptions, traceability, risks, and next steps.
+6. Ask the user when a material decision is ambiguous.
+
+## Clarification Intake
+
+For raw ideas, PRDs, issues, feature requests, feedback, or mixed requirement inputs, clarify before routing when missing information blocks a useful requirement artifact.
+
+- Ask exactly one high-leverage question at a time; do not send bulk questionnaires.
+- Prefer concise options when the answer space is known, and include a recommended/default answer when it helps the user decide.
+- Resolve prerequisite decisions first, then ask follow-up questions based on the user's answer.
+- Inspect provided documents, repository context, templates, and existing requirement artifacts before asking for information that can be inferred.
+- Use `requirement-analysis` clarification behavior for user/business requirement scope, actors, acceptance criteria, assumptions, exclusions, and terminology.
+- Keep clarification at the requirement level; defer implementation design, DFX details, and technical constraints to the appropriate later skill unless they directly affect requirement boundaries.
 
 ## Expected Outputs
 

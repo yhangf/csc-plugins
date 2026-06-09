@@ -28,12 +28,14 @@ Start with `requirements-intake` unless the user explicitly asks for a narrower 
 
 Collect the user's goal, target users, business process, pain points, existing PRD or issue text, acceptance criteria, constraints, explicit exclusions, dependencies, affected systems, security/performance/reliability expectations, and whether this is a new requirement or a change to existing requirements.
 
+Collect missing inputs through dependency-aware clarification instead of bulk questionnaires: ask one targeted question at a time, prefer concise options when possible, and include a recommended/default answer when it helps the user decide.
+
 If the user provides handoff documents from other plugins or existing repository documents, read those documents and keep analysis grounded in the provided material.
 
 ## Typical workflow
 
 1. Start from `requirements-intake` and identify whether the request needs user requirements, system requirements, review, change analysis, or evaluation.
-2. Ask clarifying questions only for missing information that blocks a useful requirement artifact.
+2. Ask clarifying questions only for missing information that blocks a useful requirement artifact. Ask one targeted question at a time, inspect available context first, and offer options plus a recommended/default answer when useful.
 3. Use `requirement-analysis` for business/user-facing requirement structure.
 4. Use `system-requirement-analysis` to derive implementation-facing capabilities, constraints, interfaces, and quality requirements.
 5. Use `requirements-review`, `requirements-change-analysis`, `aireq-evaluator`, or `sysreq-evaluator` when the user asks for review, impact analysis, or quality scoring.
@@ -61,4 +63,4 @@ When requirements are complete enough, hand off to the solution-design stage wit
 
 ## Operating constraints
 
-Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, and examples unless the user provides external handoff documents. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.
+Use bare skill names. Use only this plugin's local `skills/`, `templates/`, `rules/`, `evaluators/`, and examples unless the user provides external handoff documents. The clarification interview behavior is built into this plugin's intake and requirement-analysis flow; do not require a separate `grill-me` skill invocation. If modifying this plugin itself, read the complete `SKILL.md` for every skill being changed before editing it.

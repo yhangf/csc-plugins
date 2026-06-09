@@ -177,7 +177,19 @@ Before decomposing requirements, resolve all ambiguities. **Do NOT start Epic/Fe
 
 - **One question at a time** — do not ask multiple questions in one message
 - **Prefer multiple choice** — easier to answer than open-ended when possible
+- **Recommend a default when helpful** — when presenting options, state which answer you recommend and why
+- **Ask the highest-leverage question first** — prioritize the decision that unlocks the most downstream requirement work
+- **Resolve dependencies in order** — clarify prerequisite decisions before asking branch-specific follow-ups
+- **Check available context first** — inspect provided docs, repository files, templates, prior requirements, and knowledge-base results before asking the user for facts that can be inferred
 - **Stop when clear** — once you can answer "what does this do, who uses it, and what is out of scope", proceed
+
+### Clarification Interview Mode
+
+When requirements are underspecified, treat clarification as a focused interview rather than a questionnaire. Walk the requirement decision tree one branch at a time: identify the next blocking ambiguity, ask one question, offer concise options when possible, include a recommended/default answer, then use the user's response to choose the next branch.
+
+Continue this loop until the requirement is specific and testable enough for decomposition: scope boundaries are explicit, actors are named, domain terms are defined, assumptions are recorded, acceptance criteria can be written, major edge cases are known, and exclusions are clear.
+
+If the answer may already exist in project context, do not ask first. Search the supplied materials, current repository, existing requirement docs, and relevant knowledge sources, then ask only for the remaining uncertainty.
 
 ### What to Clarify
 
