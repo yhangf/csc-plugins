@@ -6,7 +6,10 @@
 
 编写详尽的实施计划，假设执行者对代码库零上下文。记录每个任务需要知道的一切：哪些文件、具体代码、测试方法、相关文档。将计划拆分为小粒度任务。原则：DRY、YAGNI、TDD、频繁提交。
 
-**计划保存位置：** `docs/agent-rules/plans/YYYY-MM-DD-<feature-name>.md`（用户偏好优先）
+**计划保存位置：**
+- System mode：`docs/plans/YYYY-MM-DD-<feature-name>.md`
+- Subsystem mode：`docs/plans/YYYY-MM-DD-<project>/<feature-name>-<service-name>-plan.md`
+- 用户偏好优先
 
 ## 代码风格分析（写计划前必须执行）
 
@@ -59,8 +62,7 @@
 ```markdown
 # [功能名] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development
-> (recommended) or executing-plans to implement this plan task-by-task.
+> **For downstream implementation:** Hand this plan to `tdd-implementation` or another execution environment. This planning plugin does not execute tasks.
 
 **Goal:** [一句话描述构建目标]
 **Architecture:** [2-3 句话描述方法]
@@ -96,14 +98,24 @@
 3. **类型一致性** — 后续任务的类型、方法签名与前面定义一致？
 4. **风格一致性** — 所有代码示例都遵循计划头部记录的代码约定？命名风格、导入方式、错误处理模式都与现有代码库一致？
 
+## 质量门禁
+
+计划完成并自审后，先派遣本地 `plan-evaluator` 进行被动评估，再进入下游交接。
+
+- 评估器使用 `skills/plan-evaluator/agents/evaluator-dispatch-prompt.md` 作为派遣模板。
+- 评级 A/B（≥ 80）时，把质量报告路径写入 Downstream Handoff。
+- 评级 C/D/F 时，只修复评估器列出的 Critical 和 Error 问题，最多重新评估 2 轮；仍未通过时交给用户人工介入。
+
 ## 执行交接
 
-计划完成后提供两个执行选项：
+本拆分插件止步于规划，不直接调用执行 skill。计划末尾应包含 Downstream Handoff，说明：
 
-1. **Subagent 驱动（推荐）** — 每个任务派发独立子代理，任务间审查
-2. **内联执行** — 在当前会话中使用 executing-plans 执行
+- 推荐下游插件：`cospowers-tdd-development-plugin` / `tdd-implementation`
+- 输入：实施计划、质量报告、任务图（如有）、测试策略或测试用例（如有）
+- 执行策略建议：独立任务可 subagent-driven，紧耦合或小改动可 inline execution
+- 明确声明本插件未执行代码或测试
 
 ## 下一步
 
-- 选择 Subagent 驱动：使用 `subagent-driven-development`
-- 选择内联执行：使用 `executing-plans`
+- 将通过质量门禁的计划交给 `tdd-implementation` 或其他执行环境。
+- 如果质量门禁未通过，先根据评估报告修复计划再交接。

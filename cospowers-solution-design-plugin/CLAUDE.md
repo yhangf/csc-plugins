@@ -21,6 +21,7 @@ Start with `solution-design` unless the user explicitly asks for a specific desi
 - `architecture-review`: Use when reviewing an existing design draft for correctness, completeness, consistency, risks, and feasibility.
 - `design-change-analysis`: Use when architecture, interfaces, data flow, deployment, dependencies, or module responsibilities change.
 - `doc-consistency-check`: Use when requirements, system design, subsystem design, API contracts, or other design documents may conflict.
+- `design-master-perspective`: Use as a design-quality diagnostic lens for system and subsystem designs, especially for risk, boundary, decomposition, abstraction, and anti-pattern checks.
 - `sysdesign-evaluator`: Use to evaluate system design document quality.
 - `subsystem-evaluator`: Use to evaluate subsystem design document quality.
 - `doc-quality-evaluator`: Use to evaluate document quality and cross-document issues.
@@ -64,6 +65,10 @@ Use `sysdesign-evaluator`, `subsystem-evaluator`, and `doc-quality-evaluator` wh
 ## Handoff
 
 Hand off to task planning with design documents, contracts, assumptions, dependencies, risks, and validation needs. If test design is needed next, hand off API contracts, acceptance criteria, quality requirements, and risk areas to test generation.
+
+## Maintenance reporting
+
+When reporting plugin maintenance updates, use Chinese sections: `变更摘要`, `修改文件列表`, and `具体内容变更`.
 
 ## Operating constraints
 

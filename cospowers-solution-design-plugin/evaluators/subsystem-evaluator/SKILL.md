@@ -334,10 +334,13 @@ FMEA 检查结果嵌入到 Phase 1 正常扫描流程中，输出格式：
 
 按以下模板逐章核对（仅计一、二级章节，三级及以下不计入缺失数）；缺失章节数 ≥ 3 → 红线违反：
 
-- **子系统设计文档**（对照 `templates/subsystem-design-template.md`，主入口 + 8 个子文档）：
-  子文档 1: 设计任务书 / 子文档 2: 对外接口 / 子文档 3: 概要说明 /
-  子文档 4: 数据结构设计 / 子文档 5: 流程设计 /
-  子文档 6: 总结 / 子文档 7: 测试用例 / 子文档 8: 变更控制
+- **子系统设计文档**（对照 `templates/subsystem-design-template.md`，主入口 + 内联 §1 + 11 个章节文件）：
+  `index.md`: §1 介绍 / `ch02-responsibilities.md`: §2 子系统职责和边界 /
+  `ch03-interfaces.md`: §3 对外接口 / `ch04-internal-design.md`: §4 内部设计 /
+  `ch05-exceptions.md`: §5 异常场景处理 / `ch06-test-design.md`: §6 关键测试用例 /
+  `ch07-dfx.md`: §7 DFX特性设计 / `ch08-code-standards.md`: §8 代码规范和质量要求 /
+  `ch09-deployment.md`: §9 部署和发布 / `ch10-summary.md`: §10 总结 /
+  `ch11-appendix.md`: §11 附录 / `ch12-revision-history.md`: §12 修订记录
 
 记录：缺失了哪些章节（具体章节号和名称）
 
@@ -574,7 +577,7 @@ FMEA 检查结果嵌入到 Phase 1 正常扫描流程中，输出格式：
 
 ## 六、下一步
 
-- 总评 A/B → 可通知 `subsystem-design-spec` 继续下一个子系统设计或进入 `writing-plans`
+- 总评 A/B → 可通知 `subsystem-design-spec` 继续下一个子系统设计，或将设计包交给用户或消费环境选择的任务规划流程
 - 总评 C → 修复所有 Error 及以上问题后，重新运行 `subsystem-evaluator`
 - 总评 D → 需要较大修改，建议回到 `subsystem-design-spec` 修订子系统设计
 - 总评 F → 红线违反，必须大幅返工，重新生成子系统设计文档

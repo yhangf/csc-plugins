@@ -4,7 +4,7 @@
 
 ## 概述
 
-将系统设计文档和 OpenAPI 接口契约转化为子系统级实现设计文档。**每次调用处理一个子系统**——多个子系统负责人各自独立调用本 skill。产出严格遵循 `templates/subsystem-design-template.md`（主入口 + 8 子文档），无空章节、必填 Mermaid 序列图、SQL DDL 建表语句、DFX 全覆盖。
+将系统设计文档和 OpenAPI 接口契约转化为子系统级实现设计文档。**每次调用处理一个子系统**——多个子系统负责人各自独立调用本 skill。产出严格遵循 `templates/subsystem-design-template.md`（主入口 + 内联 §1 + 11 个章节文件），无空章节、必填 Mermaid 序列图、SQL DDL 建表语句、DFX 全覆盖。
 
 **输入：** `design-spec` 产出的系统级设计 + OpenAPI 规范
 **输出：** 一个子系统的实现设计文档
@@ -12,34 +12,41 @@
 ## 7 步检查清单
 
 1. **加载系统设计和 OpenAPI** — 扫描 `docs/agent-rules/3-system-design/output/`，读取 `index.md`（子系统列表、跨子系统交互）和 `<project>-openapi.yaml`。**HARD GATE：OpenAPI 必须有效（文件存在 + YAML 合法 + 至少 1 个 endpoint），不满足则停止并提示回 `design-spec` 修正。**
-2. **收集子系统实现上下文（init 模板）** — 检查/生成 `init-{subsystem}-subsystem.md`（7 节：基本信息/内部架构/历史设计/技术债务/业务规则/外部接口/其他）。**HARD GATE：§1 基本信息（仓库/语言）和 §4 技术债务（必须明确填写或声明"无"）为阻塞项**，未完成不得进入步骤 3。校验通过后归档知识到 `evo-knowledge-wheel`。
-3. **编写 8 子文档** — 按对齐检查点分层写（非一次性输出全部）：
-   - `index.md` — 元数据 + 章节目录（先写框架，最后回填摘要）
-   - `01-design-specification.md` — 设计任务书（需求跟踪/模块目标/职责边界/流程要求）
-   - `02-external-interfaces.md` — 对外接口（API 接口引用 OpenAPI 规范/消息接口）
-   - `03-overview.md` — 概要说明（背景/方案选型/静态结构/内部流程⭐/异常处理/DFX⭐含 FMEA/风险分析）
-   - `04-data-structure-design.md` — 数据结构设计（SQL DDL⭐/配置文件/内存结构/数据关系图）
-   - `05-process-design.md` — 流程设计（子模块结构/处理流程⭐含 alt/else/算法/函数列表/设计要点检视）
-   - `06-summary.md` — 总结（版本变化/部署说明/已知问题/后续工作）
-   - `07-test-cases.md` — 测试用例（功能/异常/DFX 用例）
-   - `08-change-control.md` — 变更控制（变更列表/修订记录）
+2. **收集子系统实现上下文（init 模板）** — 检查/生成 `init-{subsystem}-subsystem.md`（7 节：基本信息/内部架构/历史设计/技术债务/业务规则/外部接口/其他）。**HARD GATE：§1 基本信息（仓库/语言）和 §4 技术债务（必须明确填写或声明"无"）为阻塞项**，未完成不得进入步骤 3。校验通过后扫描可复用知识并向用户展示归档候选，用户确认后归档到 `daedalus-knowledge`。
+3. **编写主入口 + 11 个章节文件** — 按对齐检查点分层写（非一次性输出全部）：
+   - `index.md` — 元数据 + 章节目录（先写框架，最后回填摘要，§1 介绍内联）
+   - `ch02-responsibilities.md` — 职责和边界（子系统核心职责、代码仓库映射、接口概述）
+   - `ch03-interfaces.md` — 对外接口（API 接口引用 OpenAPI 规范、消息接口）
+   - `ch04-internal-design.md` — 内部设计（背景与方案选型、静态结构、内部流程⭐、数据流转）
+   - `ch05-exceptions.md` — 异常处理设计（错误码定义、异常场景处理策略）
+   - `ch06-test-design.md` — 测试设计（功能、异常、边界、回归用例）
+   - `ch07-dfx.md` — DFX 特性设计（安全、可靠性、性能、可运维性 + FMEA⭐）
+   - `ch08-code-standards.md` — 编码规范（语言/框架规范、命名约定、代码审查重点）
+   - `ch09-deployment.md` — 部署说明（部署拓扑、配置管理、运维操作）
+   - `ch10-summary.md` — 总结（版本变化、已知问题、后续工作）
+   - `ch11-appendix.md` — 附录（参考文档、术语表）
+   - `ch12-revision-history.md` — 修订记录
 4. **跨章节一致性检查** — DFX 数字对齐、接口引用完整、术语一致、风险完备
 5. **子代理评审** — 派遣独立子代理使用 `design-document-reviewer-prompt.md` 评审
 6. **质量评估（关卡）** — 派遣 `subsystem-evaluator` 无上下文子代理，必须达到 B 级（≥ 80 分）。不达标则修复后重新评估。跨文档一致性（`doc-quality-evaluator`）在所有子系统完成后统一执行
 7. **用户审查** — 迭代至用户确认
 
-## 8 子文档结构概览
+## 主入口与 11 个章节文件概览
 
-| 子文档 | 名称 | 核心内容 |
-|:--:|------|------|
-| 1 | 设计任务书 | REQ 追踪、模块目标、职责边界、流程要求 |
-| 2 | 对外接口 | API 接口（引用 OpenAPI）、消息接口、外部依赖（DEP-XXX 编号） |
-| 3 | 概要说明 | 方案选型、内部流程 Mermaid 序列图、DFX 6 维、FMEA、风险分析 |
-| 4 | 数据结构设计 | SQL DDL（含 COMMENT）、配置文件（路径/格式/类型/默认值） |
-| 5 | 流程设计 | 子模块内部处理流程 Mermaid 序列图（含 alt/else 异常分支）、算法 |
-| 6 | 总结 | 版本变化、部署说明、已知问题、后续工作 |
-| 7 | 测试用例 | 功能用例、异常场景用例、DFX 用例 |
-| 8 | 变更控制 | 变更列表（标注延续/新增/变更-来自/废弃）、修订记录 |
+| 文件 | 章节 | 核心内容 |
+|------|------|------|
+| `index.md` | §1 介绍 | 元数据、目录、定义、参考、子系统概述 |
+| `ch02-responsibilities.md` | §2 职责和边界 | 子系统核心职责、代码仓库映射、接口概述 |
+| `ch03-interfaces.md` | §3 对外接口 | API 接口引用 OpenAPI 规范、消息接口、外部依赖 |
+| `ch04-internal-design.md` | §4 内部设计 | 方案选型、静态结构、内部流程⭐、数据流转 |
+| `ch05-exceptions.md` | §5 异常处理设计 | 错误码定义、异常场景处理策略 |
+| `ch06-test-design.md` | §6 测试设计 | 功能、异常、边界、回归用例 |
+| `ch07-dfx.md` | §7 DFX 特性设计 | 安全、可靠性、性能、可运维性、FMEA⭐ |
+| `ch08-code-standards.md` | §8 编码规范 | 语言/框架规范、命名约定、代码审查重点 |
+| `ch09-deployment.md` | §9 部署说明 | 部署拓扑、配置管理、运维操作 |
+| `ch10-summary.md` | §10 总结 | 版本变化、已知问题、后续工作 |
+| `ch11-appendix.md` | §11 附录 | 参考文档、术语表 |
+| `ch12-revision-history.md` | §12 修订记录 | 修订记录 |
 
 ## 3 种 AI 角色模式
 
@@ -72,5 +79,5 @@
 ## 下一步
 
 子系统设计通过质量评估（≥ B 级）后：
-- 如果是最后一个子系统 → 运行 `doc-quality-evaluator` 跨文档一致性，然后调用 `writing-plans`
+- 如果是最后一个子系统 → 运行 `doc-quality-evaluator` 跨文档一致性，然后将完整设计包交给用户选择的任务规划流程
 - 如其他子系统待完成 → 提醒剩余子系统负责人调用 `subsystem-design-spec`，跨文档一致性在最后一个子系统完成时统一执行

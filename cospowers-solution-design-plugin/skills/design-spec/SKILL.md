@@ -166,7 +166,39 @@ You MUST create a task for each of these items and complete them in order:
 
     If `config.evaluators["sysdesign"]` is `false`, skip this gate and proceed directly to step 13.
 13. **User reviews design** -- ask user to review the system design and OpenAPI spec, iterate if needed
-14. **Transition to subsystem design** — system design and OpenAPI spec are complete. Tell the user:
+14. **Knowledge archival** -- scan the completed design for reusable knowledge and present candidates to user:
+
+    ```
+    📦 知识归档候选项（系统设计完成）
+
+    扫描到以下设计决策值得归档：
+    1. [架构决策] 子系统 xxx 承担了 yyy 职责（非显而易见，原设计 zzz 不可行）
+    2. [DFX约束] xxx 场景下性能基线为 yyy QPS（来源：压测 / 用户确认）
+    3. [外部集成] xxx 接口存在 yyy 限制，通过 zzz 方案适配
+    4. [技术选型] 选用 xxx 而非 yyy（原因：zzz 约束）
+
+    请选择要归档的序号（如 1 2 3），或输入"跳过"不归档。
+    ```
+
+    若未发现值得归档的内容，仍需告知用户：
+
+    ```
+    📦 知识归档候选项（系统设计完成）
+
+    本次设计为常规模式，未发现对团队有通用复用价值的非显而易见决策。
+
+    如有需要补充归档的内容，请现在告知；否则输入"继续"进入子系统设计阶段。
+    ```
+
+    用户确认后，对选中条目调用 `daedalus-knowledge` 执行归档。
+
+15. **⛔ TRANSITION GATE — Verify sysdesign-evaluator before handoff**:
+    - **Verify**: Did `sysdesign-evaluator` pass with grade >= B? Or was `config.evaluators["sysdesign"]` `false`?
+    - **If grade >= B or evaluator skipped**: proceed to step 16.
+    - **If grade < B**: DO NOT transition. Present the issue list to the user, identify which init template sections need supplementing, then re-run from step 7.
+    - **If you cannot confirm**: DO NOT ask the user. Re-dispatch `sysdesign-evaluator` via `skills/sysdesign-evaluator/agents/evaluator-dispatch-prompt.md` with the current design document at `docs/agent-rules/3-system-design/output/`. Proceed if >= B, rework if < B.
+
+16. **Transition to subsystem design** — system design and OpenAPI spec are complete. Tell the user:
 
     > "系统设计及 OpenAPI 契约已完成，保存在 `docs/agent-rules/3-system-design/output/YYYY-MM-DD-<project>/`。
     >
@@ -212,7 +244,23 @@ Defines what the subagent reviewer (step 11) checks. These are also the criteria
 
 **The core question for every assertion: "What is the evidence?" — If none, either supply it or label it `[待验证]`.**
 
-**The Challenger prevents bad decisions during design. The Reviewer catches what's missing and what shouldn't be trusted. Both are mandatory.**
+### Design Master Mode
+
+**When to invoke:** During design approach exploration (step 7) and while writing critical design sections (step 8), use `design-master-perspective` as an additional quality filter. The Design Master applies the team's accumulated design wisdom to catch subtle issues that Challenger and Reviewer modes may miss.
+
+**How to invoke:** `Skill` tool with `design-master-perspective`. Present the current design decision, approach proposal, or document section to the Design Master for diagnostic analysis. The Design Master will return: diagnosis → root cause → recommendation → confidence level.
+
+**Key integration points:**
+
+| Design Phase | What to Consult | Design Master's Lens |
+|---|---|---|
+| Step 7 (Approach exploration) | Each proposed architecture approach | **Risk-driven evaluation**: "What risk does each option eliminate? Which risk does it introduce?" |
+| Step 8.2 (System architecture, Ch.2) | Subsystem decomposition proposal | **Pyramid decomposition check**: "Is each subsystem at the right granularity? Are boundaries clear?" |
+| Step 8.4 (Design spec, Ch.4) | Cross-subsystem interaction design | **Variant/invariant separation**: "Have we separated what changes from what stays stable?" |
+| Step 8.5 (DFX, Ch.5) | DFX chapter draft | **Boundary discipline**: "Does this DFX solution cross subsystem boundaries correctly?" |
+| Step 12 (Quality evaluation) | Before dispatching evaluator | **Anti-pattern scan**: Screen for 7 common design anti-patterns before formal evaluation |
+
+**The Challenger prevents bad decisions during design. The Reviewer catches what's missing and what shouldn't be trusted. The Design Master adds the team's accumulated design wisdom as a third filter. All three are mandatory.**
 
 ## Design Judgment vs Assumption
 
@@ -260,6 +308,12 @@ For each proposed approach, apply Challenger mode before presenting it to the us
 - "Which assumptions am I making that could be wrong?"
 
 If a proposed approach doesn't survive Challenger questioning, replace it with a better one. Don't present an approach you can't defend.
+
+After Challenger mode passes, apply Design Master diagnostic:
+- **Risk scan**: For each approach, ask "What risk does this option eliminate? What new risk does it introduce?"
+- **Boundary scan**: "Where are the subsystem boundaries? Does each subsystem have one clear responsibility?"
+- **Variant scan**: "What parts of this architecture will change first when requirements evolve? Are those parts isolated from the stable core?"
+- Invoke `design-master-perspective` via Skill tool when the trade-off decision has >2 options or involves significant DFX trade-offs.
 
 ### DFX 6 Dimensions for Evaluation
 

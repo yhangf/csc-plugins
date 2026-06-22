@@ -108,7 +108,11 @@ You MUST create a task for each of these items and complete them in order:
 
     If `config.evaluators["aireq"]` is `false`, skip this gate and proceed directly to step 14.
 14. **User reviews output** -- ask user to review, iterate if needed
-15. **Transition** -- invoke `system-requirement-analysis` directly
+15. **⛔ TRANSITION GATE — Verify evaluator before handoff**:
+    - **Verify**: Did `aireq-evaluator` pass with grade >= B? Or was `config.evaluators["aireq"]` `false`?
+    - **If grade >= B or evaluator skipped**: invoke `system-requirement-analysis` directly.
+    - **If grade < B**: DO NOT transition. Return to step 9, rework requirements, re-run step 13.
+    - **If you cannot confirm**: DO NOT ask the user. Re-dispatch `aireq-evaluator` via `skills/aireq-evaluator/agents/evaluator-dispatch-prompt.md` with the current document at `docs/agent-rules/1-ai-requirements/output/`. Proceed if >= B, rework if < B.
 
 ## Knowledge Base Discovery
 
@@ -340,4 +344,4 @@ The output document MUST follow the TR1 用户需求规格说明书 template. Lo
 
 ## Next Steps
 
-After user approves the requirements document, invoke `system-requirement-analysis` directly.
+**⛔ TRANSITION GATE**: After user approves the requirements document AND `aireq-evaluator` is confirmed passed (grade >= B) or disabled via config, invoke `system-requirement-analysis`. If you cannot confirm, re-dispatch `aireq-evaluator` before proceeding. If grade < B, return to step 9 for rework.

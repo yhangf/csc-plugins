@@ -202,7 +202,7 @@ Manual checkpoint request → 加载 session-context skill → AI 最终 checkpo
 
 - **local entry skill**：进入新任务前先盘点，若 active-*.md 存在则询问是否继续上次
 - **systematic-debugging**：排查过程中主动更新 active-*.md（假设、已排除方向）
-- **executing-plans**：每个 task 完成后自动更新 active-*.md 进度
+- **downstream implementation environments**：执行计划中的 task 时自动更新 active-*.md 进度
 
 ## Red Flags
 

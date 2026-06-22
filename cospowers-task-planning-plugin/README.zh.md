@@ -54,12 +54,13 @@ task-planning
 4. 查看输出计划，确认任务顺序、依赖关系和验收标准是否合理。
 5. 如果要继续推进，可以把实施计划交给测试生成或 TDD 开发流程使用。
 
-## Skills 总览（共 9 个）
+## Skills 总览（共 10 个）
 
 | Skill | 对应功能 | 适合什么时候用 |
 | --- | --- | --- |
 | `task-planning` | 入口 skill，把需求或设计拆成实施任务和计划。 | 不确定该用哪个规划 skill 时，从这里开始。 |
-| `writing-plans` | 编写编码前的实施计划。 | 需要明确改哪些文件、做哪些步骤、如何验收时使用。 |
+| `writing-plans` | 编写编码前的实施计划，并在交接前触发计划质量评估。 | 需要明确改哪些文件、做哪些步骤、如何验收时使用。 |
+| `plan-evaluator` | 对 `writing-plans` 产出的计划进行结构、可执行性、TDD 和可追溯性评估。 | 计划完成后作为被动质量门禁使用。 |
 | `task-graph-generation` | 生成任务依赖图。 | 需要看清任务先后顺序、阻塞关系和可并行部分时使用。 |
 | `execution-strategy-selection` | 选择执行策略。 | 需要判断串行、并行、subagent 或 worktree 哪种方式更合适时使用。 |
 | `subagent-dispatch-planning` | 规划 subagent 分工。 | 工作可以拆给多个执行者并行处理时使用。 |

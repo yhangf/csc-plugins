@@ -208,7 +208,17 @@ Add a **Conventions** section to the plan header:
 
 ## Domain Skill Discovery (MUST Do Before Writing Tasks)
 
-After analyzing codebase conventions, scan the current session's loaded skills (from the system-reminder skill list) and categorize any relevant ones into four groups:
+After analyzing codebase conventions, discover domain skills from two sources:
+
+1. Run the local helper script when available:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/read-domain-skills.mjs ${CLAUDE_PLUGIN_ROOT}
+```
+
+Use entries from `cospowers.config.json` under `"domain-skills"` as optional extension skills. If the script prints `Extension skill does not exist`, continue with session-loaded skills only.
+
+2. Scan the current session's loaded skills (from the system-reminder skill list) and categorize any relevant ones into four groups:
 
 | Category | Look for skills that... | Applied at |
 |---|---|---|
@@ -401,6 +411,22 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 If you find issues, fix them inline. No need to re-review -- just fix and move on. If you find a spec requirement with no task, add the task.
 
+## Plan Quality Gate
+
+After self-review and before downstream handoff, run the local `plan-evaluator` as a passive quality gate.
+
+Dispatch a fresh isolated subagent with the prompt template at `skills/plan-evaluator/agents/evaluator-dispatch-prompt.md`, replacing `[PLAN_PATH]` with the plan file or parent `index.md` path.
+
+The evaluator must:
+- Load the local `plan-evaluator` skill before evaluating
+- Detect Subsystem, System, or Innovation mode from local `docs/plans/`, `docs/design/`, and optional `docs/requirements/` artifacts
+- Save the report under the plan directory's `quality-reports/` subdirectory
+- Return only the compact summary requested by the dispatch template
+
+Act on the evaluator result:
+- **A/B (≥ 80):** Keep the plan unchanged except for adding the report path to the downstream handoff block
+- **C/D/F:** Fix only the Critical and Error issues listed by the evaluator, then re-dispatch once; after two failed repair rounds, present the remaining issues to the user instead of invoking execution
+
 ## Execution Handoff
 
 This split plugin stops at planning. It must not invoke `/goal`, `subagent-driven-development`, or `executing-plans` directly.
@@ -414,6 +440,7 @@ Recommended next plugin: `cospowers-tdd-development-plugin` / `tdd-implementatio
 
 Inputs to provide:
 - This implementation plan: `docs/plans/<filename>.md`
+- Plan quality report: `docs/plans/<...>/quality-reports/YYYY-MM-DD-plan-quality-report.md`
 - Task graph, if generated: `docs/plans/task-graph.md`
 - Test strategy or test cases, if available: `docs/tests/`
 

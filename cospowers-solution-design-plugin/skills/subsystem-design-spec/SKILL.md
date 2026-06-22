@@ -126,20 +126,43 @@ You MUST create a task for each of these items and complete them in order:
 
    If any blocking item fails: tell the user exactly what is needed, wait for update, re-read and re-validate. **Do NOT begin writing until blocking items pass.**
 
-   **⛔ HARD GATE — Step 2b: Knowledge archival to evo-knowledge-wheel**
+   **⛔ HARD GATE — Step 2b: Knowledge archival to daedalus-knowledge**
 
-   After completeness validation passes, archive reusable knowledge before designing:
+   After completeness validation passes, scan the input documents for reusable knowledge candidates across four categories:
 
-   - **技术债务**（§4）: Specific frozen code areas, known bugs with workarounds, or legacy constraints that AI must avoid touching — contribute as "no-go zone" capsules so future design sessions don't rediscover these.
-   - **业务规则**（§5）: Domain rules invisible in code (state machine constraints, calculation formulas, regulatory requirements) — contribute as domain rule capsules.
-   - **外部接口怪癖**（§6）: Non-obvious API behaviors, rate limits, failure modes of dependencies — contribute as integration pattern capsules.
-   - **内部架构决策**: If §2 reveals non-obvious design choices (e.g., "this service uses event sourcing for audit, not CRUD"), contribute as architectural decision capsules.
+   - **技术债务**（§4）: Specific frozen code areas, known bugs with workarounds, or legacy constraints that AI must avoid touching — candidate type: "no-go zone" capsule.
+   - **业务规则**（§5）: Domain rules invisible in code (state machine constraints, calculation formulas, regulatory requirements) — candidate type: domain rule capsule.
+   - **外部接口怪癖**（§6）: Non-obvious API behaviors, rate limits, failure modes of dependencies — candidate type: integration pattern capsule.
+   - **内部架构决策**: Non-obvious design choices revealed in §2 (e.g., "this service uses event sourcing for audit, not CRUD") — candidate type: architectural decision capsule.
 
-   After archival completes (or if nothing is worth contributing), proceed to step 3.
+   **After scanning, you MUST present findings to the user — even if you found nothing:**
 
-3. **Write subsystem-level design document** — following the template at `config.templates["subsystem-design"]` (default: `templates/subsystem-design-template.md`) (master entry + 11 sub-documents). Write in alignment checkpoints: pause after interfaces (Ch.3) and internal design (Ch.4) for user confirmation. API references in ch03 MUST point to the OpenAPI spec from `design-spec`. Save to `docs/agent-rules/4-subsystem-design/output/YYYY-MM-DD-<project>/<subsystem>/`.
+   ```
+   📦 知识归档候选项（Step 2b）
 
-   **File structure (11 sub-documents):**
+   扫描到以下内容值得归档：
+   1. [技术债务] xxx 模块的 xxx 方法不可修改（原因：xxx）
+   2. [业务规则] 状态机约束：xxx 状态不能直接跳转到 xxx
+   3. [架构决策] 本服务使用事件溯源而非 CRUD（原因：xxx）
+
+   请选择要归档的序号（如 1 2 3），或输入"跳过"不归档。
+   ```
+
+   若未扫描到任何候选项，仍需告知用户：
+
+   ```
+   📦 知识归档候选项（Step 2b）
+
+   未发现值得归档的内容（无技术债务、业务规则、接口怪癖或非显而易见的架构决策）。
+
+   如有需要补充归档的内容，请现在告知；否则输入"继续"进入设计阶段。
+   ```
+
+   用户确认后，对选中条目调用 `daedalus-knowledge` 执行归档。归档完成后进入 step 3。
+
+3. **Write subsystem-level design document** — following the template at `config.templates["subsystem-design"]` (default: `templates/subsystem-design-template.md`) (master entry with inline §1 + 11 chapter files). Write in alignment checkpoints: pause after interfaces (Ch.3) and internal design (Ch.4) for user confirmation. API references in ch03 MUST point to the OpenAPI spec from `design-spec`. Save to `docs/agent-rules/4-subsystem-design/output/YYYY-MM-DD-<project>/<subsystem>/`.
+
+   **File structure (master entry + 11 chapter files):**
    - `index.md` — metadata + chapter TOC with one-line summaries (write first, summaries filled last)
    - `ch02-responsibilities.md` — §2 职责和边界（子系统核心职责、代码仓库映射、接口概述）
    - `ch03-interfaces.md` — §3 对外接口（API接口定义、消息接口）
@@ -164,18 +187,49 @@ You MUST create a task for each of these items and complete them in order:
    - Responsibility summary: one paragraph on what this subsystem does and does NOT do
    - Chapter TOC: `- [§N Title](chNN-filename.md) — one-line description` for each chapter
 
+   **内部设计诊断钩子 — `design-master-perspective`自检：** 写入 Ch.4 之后，在向用户展示 Internal Design Checkpoint 之前，先运行 `design-master-perspective` skill 诊断：
+   - **模块粒度检查**（金字塔分解）：当前子模块拆分的粒度是否合理（每层 ≤7 个，无单子节点层级）
+   - **边界完整性检查**（边界纪律）：每个子模块的职责是否自成一体，"改变的影响不超出边界"
+   - **易变分离检查**（易变/不变分离）：哪些组件是稳定机制，哪些是可变策略，是否清晰分离
+   - 如果诊断发现 ≥2 个问题，在 checkpoint 中向用户提出改进建议；如果无问题，在 checkpoint 中注明"已通过设计大师自检"
+
 4. **Cross-chapter consistency check** — verify DFX numbers, interface references, terminology, risk completeness, and test-case traceability within this subsystem document (see "Cross-Chapter Consistency Check" section below). Every key flow in Ch.4 and every exception strategy in Ch.5 must have at least one executable test case in Ch.6; each changed public interface must have normal, boundary, and exception cases where applicable.
 5. **Subagent review** — dispatch a subagent reviewer using `skills/subsystem-design-spec/agents/design-document-reviewer-prompt.md`. Fix any issues found before step 6.
-6. **Quality evaluation (Stage Gate)** — dispatch a quality evaluator subagent using the skill name from `config.evaluators["subsystem"]` (default: `subsystem-evaluator`) via `skills/<evaluator>/agents/evaluator-dispatch-prompt.md`. The subagent runs in an isolated context and returns a compact grade + issue list. Apply all Critical/Error fixes. If the document scores < B (< 80): present the issue list to the user and identify which init template sections are relevant — ask the user to supplement those sections, then re-run from step 3.
+6. **⛔ Quality evaluation (Stage Gate) — MUST PASS before user review**
+
+   **A — Subsystem evaluator**: Dispatch a quality evaluator subagent using the skill name from `config.evaluators["subsystem"]` (default: `subsystem-evaluator`) via `skills/<evaluator>/agents/evaluator-dispatch-prompt.md`. The subagent runs in an isolated context and returns a compact grade + issue list. **Do NOT proceed to step 7 until grade ≥ B.** Apply all Critical/Error fixes. If grade < B: fix the issues reported, re-dispatch. Repeat until grade ≥ B (max 2 rounds; if still < B, present remaining issues to user and proceed to step 7).
 
    If `config.evaluators["subsystem"]` is `false`, skip this gate and proceed to cross-document check.
 
-   **Cross-document consistency** — dispatch a cross-document evaluator subagent using `skills/doc-quality-evaluator/agents/evaluator-dispatch-prompt.md` (runs `config.evaluators["doc-quality"]`, default: `doc-quality-evaluator`). Only runs when ALL subsystems have completed designs under `docs/agent-rules/4-subsystem-design/output/YYYY-MM-DD-<project>/`. Before dispatching, check: does every subsystem listed in system design §2.2 have a subdirectory here? If any are missing, skip this step — the last subsystem owner to complete their design will trigger the cross-document check.
+   **B — ⛔ Cross-document evaluator (dispatch NOW if last subsystem)**: Before proceeding, check: does every subsystem listed in system design §2.2 have a subdirectory under `docs/agent-rules/4-subsystem-design/output/YYYY-MM-DD-<project>/`?
+
+   **If all subsystems are present (this IS the last subsystem)**: you MUST dispatch `doc-quality-evaluator` NOW via `skills/doc-quality-evaluator/agents/evaluator-dispatch-prompt.md`. Do NOT skip. Review the returned result — if it reports blocking inconsistencies, fix them and re-dispatch to verify. Repeat until PASS. If you cannot confirm doc-quality-evaluator was run: DO NOT ask the user. Dispatch it now.
+
+   **If some subsystems are missing**: DO NOT skip silently. List the missing subsystems:
+   > "⚠️ 跨文档一致性评估（doc-quality-evaluator）暂未执行 — 仍有子系统设计未完成：`[list missing subsystems]`。当最后一份子系统设计完成后，由该子系统负责人触发 doc-quality-evaluator 评估。"
+
+   The agent tracks this as a deferred gate — cross-document evaluation must be completed before handing off to task planning.
 
    If `config.evaluators["doc-quality"]` is `false`, skip cross-document consistency check entirely.
 
 7. **User reviews design** — ask user to review the document, iterate if needed
-8. **Transition to implementation** — invoke `writing-plans`
+
+8. **⛔ TRANSITION GATE — Verify all evaluators before implementation-planning handoff**:
+
+   **Check A — Subsystem evaluator**:
+   - Did `subsystem-evaluator` pass with grade >= B? Or is `config.evaluators["subsystem"]` `false`?
+   - If grade < B: DO NOT transition. Return to step 3 for rework.
+   - **If you cannot confirm**: DO NOT ask the user. Re-dispatch `subsystem-evaluator` via `skills/subsystem-evaluator/agents/evaluator-dispatch-prompt.md` with the current subsystem design document. Proceed if >= B, rework if < B.
+
+   **Check B — Cross-document evaluator**:
+   - Are ALL subsystems in system design §2.2 complete? (Verify each has a subdirectory under the output directory using `ls`)
+   - **If not all complete**: this subsystem's design is complete and evaluator has passed. Cross-document evaluation is deferred to the last subsystem. Do NOT hand off to task planning yet — tell the user which subsystems are still pending and stop. The remaining subsystem owners should invoke `subsystem-design-spec` for their subsystems.
+   - **If all complete**: this is the last subsystem. Verify `doc-quality-evaluator` passed (conclusion: pass). If you cannot confirm it passed: dispatch it now via `skills/doc-quality-evaluator/agents/evaluator-dispatch-prompt.md`. If it returns FAIL: fix inconsistencies and re-dispatch until PASS. Only proceed to step 9 when doc-quality passes.
+   - Or is `config.evaluators["doc-quality"]` `false`? Note the skip explicitly.
+
+   **Gate passes and proceeds to step 9 only when**: Check A passes AND this IS the last subsystem AND (doc-quality passed OR doc-quality disabled).
+
+9. **Transition to implementation planning** — hand off the completed design package to the task-planning flow selected by the user or consuming environment.
 
 ## Design Phase AI Roles
 
@@ -210,7 +264,23 @@ Defines what the subagent reviewer (step 5) checks. These are also the criteria 
 
 **The core question for every assertion: "What is the evidence?" — If none, either supply it or label it `[待验证]`.**
 
-**The Challenger prevents bad decisions during design. The Reviewer catches what's missing and what shouldn't be trusted. Both are mandatory.**
+### Design Master Mode
+
+**When to invoke:** During subsystem design writing (step 3), especially for internal design (Ch.4) and DFX (Ch.7), use `design-master-perspective` as an additional quality filter. The Design Master is particularly valuable at the subsystem level — where many team anti-patterns (over-coupling, over-engineering, boundary violation) manifest most clearly.
+
+**How to invoke:** `Skill` tool with `design-master-perspective`. Present the current design section or decision to the Design Master for diagnostic analysis. The Design Master will return: diagnosis → root cause → recommendation → confidence level.
+
+**Key integration points:**
+
+| Design Phase | What to Consult | Design Master's Lens |
+|---|---|---|
+| Step 3.3 (Responsibilities, Ch.2) | Subsystem boundary definition | **Boundary discipline**: "Does this subsystem have one clear responsibility? Are there indirect dependencies that violate the boundary?" |
+| Step 3.4 (Internal design, Ch.4) | Module decomposition and internal flows | **Pyramid decomposition**: "Are modules at the right granularity? Is each module's scope MECE?" |
+| Step 3.5 (Exception handling, Ch.5) | Exception strategy | **Error truncation heuristic**: "Is each error detected at the earliest possible point? Is error propagation bounded?" |
+| Step 3.7 (DFX, Ch.7) | DFX chapter draft | **Variant/invariant separation**: "Which parts of this subsystem are stable mechanism vs. variable strategy?" |
+| Step 6 (Quality evaluation) | Before dispatching evaluator | **Anti-pattern scan**: Screen for 7 common subsystem-level anti-patterns |
+
+**The Challenger prevents bad decisions during design. The Reviewer catches what's missing and what shouldn't be trusted. The Design Master adds the team's accumulated design wisdom as a third filter. All three are mandatory.**
 
 ## Design Judgment vs Assumption
 
@@ -423,7 +493,7 @@ Run after completing the subsystem document draft (checklist step 4). When you f
 - [ ] Cross-chapter consistency check passed: DFX numbers aligned, interface references valid, terminology consistent, risks complete
 - [ ] Test scenario coverage complete: every functional flow and exception section covers normal path, exception path, and boundary conditions — any missing scenario type is an explicit gap
 - [ ] All `[待确认]` items surfaced to user and resolved before marking design approved
-- [ ] ALL 8 sub-documents from the template are present
+- [ ] The master entry and all 11 chapter files from the template are present
 - [ ] All ⭐必填 Mermaid diagrams included (not ASCII substitutes), each followed by structured text table
 - [ ] Database tables defined with SQL DDL (not Markdown tables), including COMMENTs and index annotations
 - [ ] AI可读性 annotations followed: flows have both diagrams AND step tables, interfaces use standard reference format
@@ -436,5 +506,5 @@ Run after completing the subsystem document draft (checklist step 4). When you f
 
 After quality evaluation passes (grade B or above) and user approves the subsystem design document:
 
-- If this was the last subsystem (all subsystems in §2.2 have completed designs): dispatch `config.evaluators["doc-quality"]` (default: `doc-quality-evaluator`) using `skills/doc-quality-evaluator/agents/evaluator-dispatch-prompt.md` for cross-document consistency, then invoke `writing-plans`
+- If this was the last subsystem (all subsystems in §2.2 have completed designs): dispatch `config.evaluators["doc-quality"]` (default: `doc-quality-evaluator`) using `skills/doc-quality-evaluator/agents/evaluator-dispatch-prompt.md` for cross-document consistency, then hand off the completed design package to the task-planning flow selected by the user or consuming environment
 - If other subsystems are still pending: remind the user that the remaining subsystem owners should also invoke `subsystem-design-spec`. Cross-document consistency will run when the last subsystem is complete.

@@ -55,7 +55,7 @@ Agent:
 
 | Grade | Action |
 |---|---|
-| **A or B (≥ 80)** | Apply any Warning-level fixes if straightforward; continue to next subsystem design or proceed to `writing-plans` |
+| **A or B (≥ 80)** | Apply any Warning-level fixes if straightforward; continue to next subsystem design or hand off to the task-planning flow selected by the user or consuming environment |
 | **C (65–79)** | Apply all Error+ fixes from the issues table; re-dispatch this subagent with the updated document path; repeat until grade B or above |
 | **D (< 65) or F** | Major rework needed — return to `subsystem-design-spec` and fix root issues before re-dispatching |
 

@@ -24,7 +24,7 @@ Use this skill within the independent `cospowers-solution-design` plugin. It sup
 ## Workflow
 
 1. Classify the user's input for this plugin's scope.
-2. Reuse local skills and local assets only.
+2. Reuse local skills and local assets only, including `design-master-perspective` for design-quality diagnostics when system or subsystem decisions need deeper review.
 3. Produce or update the expected artifacts.
 4. Record assumptions, traceability, risks, and next steps.
 5. Ask the user when a material decision is ambiguous.

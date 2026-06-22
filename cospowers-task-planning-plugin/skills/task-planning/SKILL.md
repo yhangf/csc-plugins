@@ -26,8 +26,9 @@ Use this skill within the independent `cospowers-task-planning` plugin. It suppo
 1. Classify the user's input for this plugin's scope.
 2. Reuse local skills and local assets only.
 3. Produce or update the expected artifacts.
-4. Record assumptions, traceability, risks, and next steps.
-5. Ask the user when a material decision is ambiguous.
+4. When producing implementation plans, use `writing-plans` and its local `plan-evaluator` quality gate before downstream handoff.
+5. Record assumptions, traceability, risks, quality-gate status, and next steps.
+6. Ask the user when a material decision is ambiguous.
 
 ## Expected Outputs
 

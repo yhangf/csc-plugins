@@ -1,6 +1,11 @@
 ---
 name: system-requirement-analysis
 description: Use when (A) AI requirements (Epic/Feature/Story) exist and need deepening into system-level requirements, OR (B) a structured user requirement document already exists and can skip requirement-analysis — produces Given-When-Then acceptance criteria with 5 scenario types for enterprise projects
+allowed-tools: Bash(node *)
+allowedCommands:
+  - "node **/read-skill-supplement.mjs*"
+allowedPaths:
+  - "**"
 ---
 
 # System Requirement Analysis
@@ -46,6 +51,10 @@ Before starting, read `cospowers.config.json` from the plugin root (2 levels abo
 - Innovation/prototype projects (use `requirements-intake` directly when requirement artifacts are needed)
 - Raw ideas with no documentation yet (use `requirement-analysis` first)
 
+```!
+node ${CLAUDE_SKILL_DIR}/scripts/read-skill-supplement.mjs system-requirement-analysis ${CLAUDE_PLUGIN_ROOT}
+```
+
 ## Workflow
 
 You MUST create a TodoWrite task for each major step (0.1 through 4.2) and complete them in order.
@@ -71,16 +80,19 @@ You MUST create a TodoWrite task for each major step (0.1 through 4.2) and compl
 
 **Template resolution logic:**
 
+**⛔ IMPORTANT: KB pre-query at template write time.** When module/service names are identifiable from user input or conversation context, invoke the KB skill (per `config.kb.skill` or `kb-query`) with those names **before writing** the init template. Pre-fill §9 DFX constraints and supplement §4 with results — the user sees enriched content on first open. Step 0.6 will do deeper follow-up with confirmed names from the validated template.
+
 - **If running within a role context** (`requirement_analyst` or `ainative_requirement_analyst`): check for the pre-installed file at `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md`.
-  - **If file does not exist**: write the template (read `templates/init-sysreq-template.md` from skill base directory, pre-fill project name if mentioned) to that path, then tell the user: "我已将背景情报简报写入 `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md`，请在 IDE 中打开并填写。**§1 业务背景** 和 **§2 关键业务场景** 为必填项，其余按需填写，不知道的跳过。填写完成后告知我。" Wait for user confirmation, then re-read and apply the mapping table.
+  - **If file does not exist**: read `templates/init-sysreq-template.md`, invoke KB pre-query per rule above, then write the template (pre-fill project name if mentioned, §9 DFX baselines and §4 with KB results) to that path, then tell the user: "我已将背景情报简报写入 `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md`，请在 IDE 中打开并填写。**§1 业务背景** 和 **§2 关键业务场景** 为必填项，其余按需填写，不知道的跳过。填写完成后告知我。" Wait for user confirmation, then re-read and apply the mapping table.
   - **If file exists but still has placeholders** (`*(在这里写...)*` or `*(在这里贴`): tell the user: "请先在 IDE 中填写 `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md` 的背景情报简报（§1 业务背景和 §2 关键场景为必填），完成后告知我。" Wait for user confirmation, then re-read and apply the mapping table.
   - **If file exists and is filled**: apply the mapping table above to extract all background knowledge.
 - **If no role context and no file provided**: write the init template to the project and wait:
   1. Read `templates/init-sysreq-template.md` from the skill's base directory
-  2. Pre-fill any known information (project name if mentioned, related services already visible in conversation)
-  3. Write to `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md` (create directory if needed)
-  4. Tell the user: "我已将背景情报简报写入 `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md`，请在 IDE 中打开并填写。**§1 业务背景** 和 **§2 关键业务场景** 为必填项，其余按需填写，不知道的跳过。填写完成后告知我，我再开始分析。"
-  5. Wait for user confirmation, then read the file and apply the mapping table. If §1 and §2 are still empty, ask the user to complete only those two sections.
+  2. Invoke KB pre-query per rule above when identifiable module/service names exist
+  3. Pre-fill any known information (project name if mentioned, related services already visible in conversation, §9 DFX baselines and §4 KB results)
+  4. Write to `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md` (create directory if needed)
+  5. Tell the user: "我已将背景情报简报写入 `docs/agent-rules/2-system-requirements/input/init-sysreq-template.md`，请在 IDE 中打开并填写。**§1 业务背景** 和 **§2 关键业务场景** 为必填项，其余按需填写，不知道的跳过。填写完成后告知我，我再开始分析。"
+  6. Wait for user confirmation, then read the file and apply the mapping table. If §1 and §2 are still empty, ask the user to complete only those two sections.
 - **If user provides a file path** (XMind, user requirement document, PRD): copy it to `docs/agent-rules/2-system-requirements/input/` automatically — do NOT ask the user to move it. The file is the **content input**. The init template is still **required** — it collects background context (business motivation, related services, domain terms) NOT in the document. Check whether init-sysreq-template.md exists and is filled; if not, generate it (pre-filling known info from the document) and ask the user to complete §1 and §2 before proceeding.
 - **If user provides content inline** (XMind content, AI requirements, raw PRD text): treat it as the content input. Still check for and generate the init template — inline content does not replace background context collection.
 - **Architecture diagrams (§5) must be processed before knowledge base queries**: read/display the diagram, then extract all visible component/module names and add them as additional search terms in Step 0.6. Diagram content takes precedence over AI inference for identifying existing modules.
@@ -123,11 +135,23 @@ If any blocking section is insufficient: tell user exactly what's missing, wait 
 
 #### 0.3 ⛔ HARD GATE — Knowledge Archival
 
-Use the Skill tool to invoke `evo-knowledge-wheel` to archive reusable domain knowledge from the init template (§1 business patterns, §6 domain terms, §2/§6 business rules, §4/§5 architecture constraints). Skip project-specific details, already-archived items, and empty sections.
+Scan the init template for reusable domain knowledge candidates across these categories:
+- §1 business patterns and problem framing
+- §6 domain terms and business rules
+- §2/§6 reusable scenario or rule patterns
+- §4/§5 architecture constraints and module relationships
 
-After archival: "背景情报已校验完整，可复用知识已归档至团队知识库。开始系统需求分析。"
+Skip project-specific details, already-archived items, and empty sections.
 
-**⛔ Do NOT proceed to 0.4 until archival is confirmed complete.**
+**After scanning, you MUST present findings to the user — even if you found nothing:**
+- If candidates exist: list them by category, explain why each is reusable, and ask the user which items to archive.
+- If no candidates exist: say "未发现适合归档的可复用知识，跳过归档。"
+
+用户确认后，对选中条目调用 `daedalus-knowledge` 执行归档。
+
+After archival or explicit skip: "背景情报已校验完整，可复用知识归档步骤已完成。开始系统需求分析。"
+
+**⛔ Do NOT proceed to 0.4 until archival is confirmed complete or explicitly skipped.**
 
 #### 0.4 Load Input Requirements
 
@@ -141,7 +165,9 @@ After archival: "背景情报已校验完整，可复用知识已归档至团队
 
 Check §3 of init template first. If no historical docs there, ask user. If previous version exists, load it for change diff. See [Historical Version Handling](#historical-version-handling) for change classification and presentation format.
 
-#### 0.6 Query Product Knowledge Base
+#### 0.6 Query Product Knowledge Base (Deep Follow-up)
+
+Building on Step 0.1's pre-query, re-query with **confirmed** module/service names from the user-validated init template (§4, §5). Target API specs, architecture docs, and tech stacks in depth — this informs REQ delta analysis and DFX targets. Update §9 and §4 with any new findings.
 
 **Apply the three-mode detection** (see [Knowledge Base Discovery](#knowledge-base-discovery)):
 - **config.kb.skill / kb-query available** → invoke KB skill with module/service names from §4 and §5 as search terms
@@ -220,7 +246,7 @@ Ask the user to choose one of three generation modes:
 
 **`index.md` required content:** document metadata table; high-density summary (scope, REQ counts by priority); chapter TOC as `- [§N Title](chNN-filename.md) — one-line description, key counts`; global constraints (no empty sections rule — stated once here, not per chapter).
 
-Downstream discovery: `design-spec` finds this by scanning `docs/agent-rules/2-system-requirements/output/` for newest subdirectory by YYYY-MM-DD prefix.
+Downstream design workflows can find this by scanning `docs/agent-rules/2-system-requirements/output/` for the newest subdirectory by YYYY-MM-DD prefix.
 
 #### 2.2 Write Chapters
 
@@ -274,17 +300,18 @@ See [DFX Non-Functional Requirements](#dfx-non-functional-requirements) for the 
 
 ---
 
-#### 2.3 ⛔ MANDATORY — Dispatch IPD Epic Generation (Background)
+#### 2.3 Prepare Requirement Handoff Summary
 
-**You MUST dispatch this subagent before proceeding to Step 3. Do not skip.**
+After Step 2.2 completes (all 9 chapter files written), prepare a concise handoff summary for downstream design work. Do not invoke design or IPD-generation skills from this split plugin.
 
-After Step 2.2 completes (all 9 chapter files written), dispatch `generate-ipd-story` as a **background subagent** using `skills/generate-ipd-story/agents/dispatch-prompt.md`.
+The handoff summary must include:
+- System requirement output directory
+- REQ count by priority and change tag
+- Key DFX constraints from Ch.4
+- Platform constraints from Ch.6
+- Open questions and unresolved `[待确认]` items
 
-Replace `[SYSREQ_DIR]` with the output directory just written (e.g. `docs/agent-rules/2-system-requirements/output/YYYY-MM-DD-<project>/`) and `[PROJECT_NAME]` with the project name.
-
-**Dispatch now, then proceed immediately to Step 3 without waiting for the result.** The E/F/S document path and quality grade will be reported in the background subagent's completion notification.
-
-Tell user: "System requirement chapters written. Generating IPD Epic/Feature/Story document in the background (quality gate included) — this runs in parallel with the system requirement quality checks."
+Tell user: "系统需求章节已写入，可交付给后续设计流程使用；我会先完成系统需求质量检查。"
 
 ---
 
@@ -324,7 +351,7 @@ If `config.evaluators["sysreq"]` is `false`, skip this gate and proceed directly
 
 | Grade | Action |
 |---|---|
-| **A or B (≥ 80)** | Present document to user, proceed to `design-spec` |
+| **A or B (≥ 80)** | Present document to user, prepare handoff artifacts for downstream design |
 | **C (65–79)** | Apply all Error+ fixes, re-evaluate until ≥ 80 |
 | **D (< 65) or F** | Return to earlier steps to fix root issues, then re-evaluate |
 
@@ -490,4 +517,14 @@ All 7 dimensions must be addressed:
 
 ## Next Steps
 
-After quality evaluation passes (grade ≥ B) and user approves the system requirement document, invoke `design-spec` for the design phase.
+**⛔ TRANSITION GATE — Verify before design handoff:**
+
+1. **Quality gate check**: Did `sysreq-evaluator` pass with grade >= B? Or is `config.evaluators["sysreq"]` `false`?
+   - If evaluator ran and grade < B: DO NOT proceed. Return to step 4.2 rework loop.
+   - If evaluator was skipped via config: explicitly note the skip before proceeding.
+   - **If you cannot confirm**: DO NOT ask the user. Re-dispatch `sysreq-evaluator` via `skills/sysreq-evaluator/agents/evaluator-dispatch-prompt.md` with the current document at `docs/agent-rules/2-system-requirements/output/`. Proceed if >= B, rework if < B.
+2. **Handoff check**: Step 2.3 handoff summary is complete and points to the generated system requirement output directory.
+
+**When both checks pass AND user approves the document**, provide the handoff artifacts for the downstream solution-design stage.
+
+**If any check fails**: tell the user what is missing. Do NOT present the document as ready for design handoff.
