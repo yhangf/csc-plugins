@@ -7,7 +7,8 @@ Use this template when dispatching a `doc-quality-evaluator` subagent from `subs
 **Dispatch after:** All three document types have been individually evaluated and their quality issues resolved.
 
 ```
-Task tool (general-purpose):
+Agent:
+  subagent_type: "general-purpose"
   description: "Cross-document consistency check: [project/feature name]"
   prompt: |
     You are a cross-document consistency evaluator. Run consistency checks by following the doc-quality-evaluator skill.

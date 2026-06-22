@@ -41,7 +41,7 @@ If you haven't collected real data, you cannot form conclusions.
 
 **BEFORE starting any investigation**, search the team knowledge Hub for known solutions:
 
-Use the Skill tool to invoke `evo-knowledge-wheel` with keywords extracted from the error message or problem description. The Hub may contain:
+Use the Skill tool to invoke `daedalus-knowledge` with keywords extracted from the error message or problem description. The Hub may contain:
 - Exact same error with proven fix (Capsule)
 - Similar problem pattern with strategic direction (Gene)
 - Multi-step fix recipe (Recipe)
@@ -97,6 +97,15 @@ After 5W1H collection, classify the fault to select investigation strategy:
 | **Intermittent** | Sporadic, hard to reproduce | Add logging, increase observation window |
 | **Data** | Inconsistency, loss, corruption | DB queries, data flow tracing |
 | **Configuration** | Environment differences, wrong params | Config diff, environment comparison |
+| **Integration/E2E** | Multi-service interaction failure, async message loss | Trace chain tracing, message log replay, environment replication |
+| **Stability** | Memory leak, gradual degradation, deadlock | Resource trend analysis, long-duration observation, stress reproduction |
+
+**Non-code problem routing:** Performance, Integration/E2E, and Stability faults cannot be solved by static code analysis alone. For these types, the Evidence Collection must include:
+- **Environment data** (resource usage trends, network topology, configuration dumps)
+- **System state snapshot** (current connections, queue depths, goroutine/thread counts)
+- **Reproduction environment** (isolated test environment matching production topology, not unit test mock)
+
+If environment data is unavailable and you're relying only on code reading, STOP and ask for it.
 
 #### Evidence Collection
 
@@ -109,6 +118,16 @@ After 5W1H collection, classify the fault to select investigation strategy:
 4. **Gather Evidence in Multi-Component Systems** -- Before proposing fixes, add diagnostic instrumentation at each component boundary. Run once to gather evidence showing WHERE it breaks.
 
 5. **Trace Data Flow** -- See `references/root-cause-tracing.md` in this directory for the complete backward tracing technique. Fix at source, not at symptom.
+
+6. **Environment Replication Check** -- Before forming conclusions, verify you have environment context matching the fault conditions:
+
+   - **Runtime environment**: OS version, kernel parameters, container orchestration version
+   - **Dependency versions**: Service versions, library versions, shared module versions — exact versions, not ranges
+   - **Configuration dump**: Full configuration snapshot from the fault environment (not the default config)
+   - **Data state**: Dataset size, index status, data distribution at time of fault
+   - **Topology context**: Which instances were involved, load balancer routing at time of fault
+
+   **Gate:** If any of the above cannot be obtained from the fault environment and you're attempting to reproduce on a different environment, flag this gap explicitly. An environment mismatch between analysis and fault is the #1 cause of wrong root cause conclusions.
 
 #### 5-Why Root Cause Analysis
 
@@ -175,7 +194,8 @@ After investigation, assess confidence before proposing any fix.
 - Fault phenomenon: [one-sentence summary]
 - Impact scope: [which operations/users/features affected]
 - Duration: [since when, continuous or intermittent]
-- Classification: [Crash/Functional/Performance/Intermittent/Data/Configuration]
+- Classification: [Crash/Functional/Performance/Intermittent/Data/Configuration/Integration-E2E/Stability]
+- Environment: [which environment, runtime versions, topology, instance count]
 
 ## 5W1H
 - What: [phenomenon vs. expected]
@@ -231,8 +251,33 @@ After investigation, assess confidence before proposing any fix.
    - **3b. No regression**: Run linked test suite (Go: packages of changed files; Python: test files covering changed modules). All existing tests must still pass.
    - **3c. Evidence**: Invoke `verification-before-completion`. Run the verification commands, read the full output, confirm pass. Do NOT claim success without evidence.
 4. **Commit following `spec-commit`** (AI tag, structured message, no `git add -A`)
-5. **Risk assessment** -- What could this change break? What edge cases remain?
-6. **Append fix record to report:**
+5. **Knowledge archival** -- After fix is committed, scan for reusable knowledge and present candidates to user:
+
+   ```
+   📦 知识归档候选项（排障完成）
+
+   扫描到以下内容值得归档：
+   1. [根因] xxx 导致 yyy（触发条件：zzz）
+   2. [方案] 通过修改 xxx 解决，约束：yyy 不可用此方案
+   3. [验证] 通过 xxx 测试确认
+
+   请选择要归档的序号（如 1 2 3），或输入"跳过"不归档。
+   ```
+
+   若未扫描到复用价值内容，仍需告知用户：
+
+   ```
+   📦 知识归档候选项（排障完成）
+
+   此次修复为项目特异性问题，未发现对团队有通用复用价值的内容。
+
+   如有需要补充归档的内容，请现在告知；否则输入"继续"完成排障。
+   ```
+
+   用户确认后，对选中条目调用 `daedalus-knowledge` 执行归档，使用 `[根因]`/`[方案]`/`[约束]`/`[验证]` 格式。
+
+6. **Risk assessment** -- What could this change break? What edge cases remain?
+7. **Append fix record to report:**
 
 ```markdown
 ## Fix Record
@@ -255,6 +300,8 @@ After investigation, assess confidence before proposing any fix.
 - 5W1H collection is missing critical dimensions (What, Where, How)
 - Encountering a component you have no context for
 - The fault is intermittent and you cannot reproduce it
+- Environmental context is incomplete -- you're analyzing on a different environment than the fault occurred
+- Fault type is Integration/E2E or Stability and you lack environment topology or system state snapshot
 
 **Do NOT:**
 - Guess at data you should be reading from logs or responses
@@ -298,7 +345,7 @@ After investigation, assess confidence before proposing any fix.
 - **test-driven-development** -- For creating failing test case (Phase 4)
 - **verification-before-completion** -- Verify fix worked before claiming success
 - **spec-commit** -- Commit fix following structured commit format
-- **evo-knowledge-wheel** -- Search/contribute team knowledge (Step 0 and post-fix)
+- **daedalus-knowledge** -- Search/contribute team knowledge (Step 0 and post-fix)
 
 ## Quick Reference
 

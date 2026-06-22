@@ -409,7 +409,24 @@ done
 ```
 
 > `include_content=true` returns the full `content` field, avoiding N+1 requests.
-> If the endpoint is unreachable, skip this step and proceed to Step 1. **Must record the degradation reason** (e.g., "知识库平台不可达，跳过合规检查") for inclusion in the compliance report section of the commit message.
+> If the endpoint is unreachable (connection refused, timeout, HTTP 5xx), **do NOT silently skip**. Report the failure and ask:
+>
+> ```
+> ⚠️ 显式规范文档加载失败
+>
+> 无法从 KB API 加载编码规范文档（scope: {scope_list}）。
+>
+> 请选择：
+> 1. 降级为本地 rules/ 目录检查（使用本地规范文件继续合规检查）
+> 2. 排查服务异常原因后重试
+> 3. 跳过显式规范检查（合规报告中将标记降级原因）
+> ```
+>
+> | 用户选择 | 行为 |
+> |---|---|
+> | 1. 降级本地 | 切换到 local mode，从 `config.rules["coding-standards"]` 加载本地规范文件，继续 0.4 |
+> | 2. 排查重试 | 等待用户修复后，重新执行 Step 0.3 |
+> | 3. 跳过 | 跳过 0.3，合规报告写入"显式规范检查：已降级（原因：{具体原因}）"，继续 0.4 |
 
 #### Local mode (COMPLIANCE_MODE == "local")
 
@@ -474,7 +491,22 @@ done
 2. Skip docs with empty `tags` (low-quality AI-generated content)
 3. If no technology tags are detected in the diff, skip implicit document fetching entirely
 
-> If the endpoint is unreachable, skip this step and proceed to Step 0.5. **Must record the degradation reason.**
+> If the endpoint is unreachable (connection refused, timeout, HTTP 5xx), **do NOT silently skip**. Report the failure and ask:
+>
+> ```
+> ⚠️ 隐式知识文档加载失败
+>
+> 无法从 KB API 搜索隐式知识文档（tags: {tag_list}）。
+>
+> 请选择：
+> 1. 跳过隐式知识检查，继续后续步骤（隐式知识为最佳实践参考，非强制规范）
+> 2. 排查服务异常原因后重试
+> ```
+>
+> | 用户选择 | 行为 |
+> |---|---|
+> | 1. 跳过 | 跳过 0.4，合规报告写入"隐式知识检查：已跳过（原因：{具体原因}）"，继续 0.5 |
+> | 2. 排查重试 | 等待用户修复后，重新执行 Step 0.4 |
 
 ---
 
@@ -554,11 +586,23 @@ After each subagent finishes:
 After each subagent returns (both Phase 1 and Phase 2), record a compliance log to the knowledge hub for analytics:
 
 ```bash
-curl -s -X POST "${DAEDALUS_URL:-}/openapi/v1/knowledge/wheel-log" \
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+  -X POST "${DAEDALUS_URL:-}/openapi/v1/knowledge/wheel-log" \
   -H "X-API-Key: ${DAEDALUS_API_KEY}" \
   -H "Content-Type: application/json" \
-  --data-binary @/tmp/_compliance_log.json
+  --data-binary @/tmp/_compliance_log.json \
+  --connect-timeout 5 --max-time 10)
+
+if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
+  echo "[WHEEL-LOG-FAILED: HTTP $HTTP_CODE] 合规轮日志上报失败，不影响提交"
+fi
 ```
+
+> Wheel log upload failures are **non-blocking** — the commit proceeds regardless. The failure is noted in the output but does not require user interaction.
+> If the endpoint is unreachable (connection refused, timeout), log the failure and continue. The compliance report section in the commit message appends:
+> ```
+> - 合规轮日志上报：失败（原因：{error_reason}），不影响提交
+> ```
 
 Payload structure (written to temp file first for Chinese content):
 ```json

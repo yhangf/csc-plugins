@@ -11,7 +11,7 @@
 ## 团队编码规范
 
 - **Git 提交**：所有提交走 `spec-commit`
-- **知识 Hub**：遇到技术问题先搜索 `evo-knowledge-wheel`
+- **知识 Hub**：遇到技术问题先搜索 `daedalus-knowledge`
 - **禁止 `git add -A`**：逐个添加文件，排除 `agent-rules/` 目录
 - **分离关注点**：不同目的的变更分开提交
 

@@ -41,12 +41,12 @@ If you haven't collected real data, you cannot form conclusions.
 
 **BEFORE starting any investigation**, search the team knowledge Hub for known solutions:
 
-Use the Skill tool to invoke `evo-knowledge-wheel` with keywords extracted from the error message or problem description. The Hub may contain:
+If a knowledge Hub skill is available in the current plugin/runtime, invoke it with keywords extracted from the error message or problem description. The Hub may contain:
 - Exact same error with proven fix (Capsule)
 - Similar problem pattern with strategic direction (Gene)
 - Multi-step fix recipe (Recipe)
 
-If a matching Capsule is found with high confidence, apply it directly. Only proceed to Phase 1 if no match or if the matched solution doesn't resolve the issue.
+If no knowledge Hub skill is available, note `[SKIP-KNOWLEDGE-HUB: skill not available]` and proceed to Phase 1. If a matching Capsule is found with high confidence, apply it directly. Only proceed to Phase 1 if no match or if the matched solution doesn't resolve the issue.
 
 ## Step 1: Data Validation Priority
 
@@ -231,8 +231,33 @@ After investigation, assess confidence before proposing any fix.
    - **3b. No regression**: Run linked test suite (Go: packages of changed files; Python: test files covering changed modules). All existing tests must still pass.
    - **3c. Evidence**: Invoke `verification-before-completion`. Run the verification commands, read the full output, confirm pass. Do NOT claim success without evidence.
 4. **Commit following `spec-commit`** (AI tag, structured message, no `git add -A`)
-5. **Risk assessment** -- What could this change break? What edge cases remain?
-6. **Append fix record to report:**
+5. **Knowledge archival** -- After fix is committed, scan for reusable knowledge and present candidates to user:
+
+   ```
+   📦 知识归档候选项（排障完成）
+
+   扫描到以下内容值得归档：
+   1. [根因] xxx 导致 yyy（触发条件：zzz）
+   2. [方案] 通过修改 xxx 解决，约束：yyy 不可用此方案
+   3. [验证] 通过 xxx 测试确认
+
+   请选择要归档的序号（如 1 2 3），或输入"跳过"不归档。
+   ```
+
+   若未扫描到复用价值内容，仍需告知用户：
+
+   ```
+   📦 知识归档候选项（排障完成）
+
+   此次修复为项目特异性问题，未发现对团队有通用复用价值的内容。
+
+   如有需要补充归档的内容，请现在告知；否则输入"继续"完成排障。
+   ```
+
+   用户确认后，如果当前插件/运行时存在知识 Hub skill，则对选中条目执行归档，使用 `[根因]`/`[方案]`/`[约束]`/`[验证]` 格式；如果不可用，记录 `[SKIP-KNOWLEDGE-ARCHIVAL: skill not available]`。
+
+6. **Risk assessment** -- What could this change break? What edge cases remain?
+7. **Append fix record to report:**
 
 ```markdown
 ## Fix Record
@@ -298,7 +323,7 @@ After investigation, assess confidence before proposing any fix.
 - **test-driven-development** -- For creating failing test case (Phase 4)
 - **verification-before-completion** -- Verify fix worked before claiming success
 - **spec-commit** -- Commit fix following structured commit format
-- **evo-knowledge-wheel** -- Search/contribute team knowledge (Step 0 and post-fix)
+- **Knowledge Hub skill (if available)** -- Search/contribute team knowledge (Step 0 and post-fix)
 
 ## Quick Reference
 

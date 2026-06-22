@@ -32,7 +32,7 @@ If running in subagent mode, the steps below still apply as the orchestration fr
 ## Team Coding Standards
 
 - **Git commits**: All commits must follow `spec-commit` (AI tags, protected branch checks, structured messages)
-- **Knowledge Hub**: Before solving technical problems encountered during execution, search the team knowledge Hub via `evo-knowledge-wheel`
+- **Knowledge Hub**: Before solving technical problems encountered during execution, search the team knowledge Hub via `daedalus-knowledge`
 - **No `git add -A`**: Stage files individually, exclude `agent-rules/` directory
 - **Separate concerns**: Different purposes go in separate commits
 
@@ -110,7 +110,32 @@ After all tasks complete:
 1. Record T_FIRST_COMPLETE time-stat (see Time-Stats Logging above)
 2. **Dispatch final code-reviewer subagent** using `./skills/subagent-driven-development/agents/final-code-reviewer-prompt.md` — cross-task review of the entire implementation (scope: `git diff <plan-start-commit>..HEAD`)
 3. **Run full test suite**: `pytest tests/ -v` (Python) or `go test ./... -v` (Go); API tests if applicable
-4. **REQUIRED SUB-SKILL:** Use finishing-a-development-branch
+4. **Knowledge archival** -- Scan the entire execution for reusable knowledge and present candidates to user:
+
+   ```
+   📦 知识归档候选项（执行完成）
+
+   扫描到以下内容值得归档：
+   1. [技术方案] xxx 问题通过 yyy 解决（非显而易见，预期方案 zzz 不可行）
+   2. [约束] xxx 场景下不可使用 yyy（原因：zzz）
+   3. [Workaround] xxx 库版本问题，通过 yyy 规避
+
+   请选择要归档的序号（如 1 2 3），或输入"跳过"不归档。
+   ```
+
+   若未发现值得归档的内容，仍需告知用户：
+
+   ```
+   📦 知识归档候选项（执行完成）
+
+   本次执行按计划推进，未发现非预期的技术方案、约束或 Workaround。
+
+   如有需要补充归档的内容，请现在告知；否则输入"继续"进入收尾阶段。
+   ```
+
+   用户确认后，对选中条目调用 `daedalus-knowledge` 执行归档。
+
+5. **REQUIRED SUB-SKILL:** Use finishing-a-development-branch
 
 ## When to Stop and Ask for Help
 

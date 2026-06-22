@@ -19,7 +19,7 @@
 
 ## 步骤 0：搜索知识 Hub
 
-调查**之前**，先调用 `evo-knowledge-wheel` 搜索团队知识 Hub。可能已有现成方案（Capsule）、类似模式（Gene）或多步修复方案（Recipe）。
+调查**之前**，如果当前插件/运行时存在知识 Hub skill，则用错误信息或问题描述关键词搜索团队知识 Hub。可能已有现成方案（Capsule）、类似模式（Gene）或多步修复方案（Recipe）。如果没有可用的知识 Hub skill，记录 `[SKIP-KNOWLEDGE-HUB: skill not available]` 后继续阶段 1。
 
 ## 证据优先级
 

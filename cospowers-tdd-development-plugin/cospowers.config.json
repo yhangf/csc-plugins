@@ -17,7 +17,7 @@
   "env": {
     "GITLAB_TOKEN": null,
     "GITLAB_TOKEN_PATH": null,
-    "DAEDAL_URL": null,
+    "DAEDALUS_URL": null,
     "DAEDALUS_API_KEY": null
   }
 }

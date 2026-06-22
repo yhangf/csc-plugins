@@ -193,7 +193,26 @@ Read each file with the Read tool. If a file does not exist for a scope, skip th
 #### Remote mode (DAEDALUS_URL set)
 
 
-**Graceful degradation** (remote mode only): If standards cannot be loaded (unreachable, timeout), skip Step 1 entirely. The committer appends `[SKIP-STANDARDS-CHECK: 规范不可达]` to the commit message. Proceed directly to Step 2 (lint auto-fix). Do not retry. Do not block the commit.
+**Graceful degradation** (remote mode only): If standards cannot be loaded (unreachable, timeout), **do NOT silently skip**. Instead, report the failure to the user and ask:
+
+```
+⚠️ 编码规范服务不可达
+
+无法从 KB API 加载编码规范文档。可能原因：网络问题、DAEDALUS_URL 配置错误、KB 服务异常。
+
+请选择：
+1. 降级为本地 rules/ 目录检查（使用本地规范文件继续 Step 1）
+2. 排查服务异常原因后重试
+3. 跳过本次规范检查（提交时将在 commit message 中标记 [SKIP-STANDARDS-CHECK: 规范不可达]）
+```
+
+| 用户选择 | 行为 |
+|---|---|
+| 1. 降级本地 | 切换到 local mode，从 `config.rules["coding-standards"]` 加载本地规范文件，继续 Step 1 |
+| 2. 排查重试 | 等待用户修复问题，重新执行 Step 1 |
+| 3. 跳过 | 跳过 Step 1 全部规范检查，在 commit message 追加 `[SKIP-STANDARDS-CHECK: 规范不可达]`，直接进入 Step 2 |
+
+Do not retry automatically. Do not block the commit without user consent.
 
 ### Step 3: Review Diff Against Standards
 
