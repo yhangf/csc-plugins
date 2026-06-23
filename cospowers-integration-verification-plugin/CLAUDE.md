@@ -2,15 +2,15 @@
 
 ## What this plugin is for
 
-This plugin helps an agent prove that completed or near-completed work is safe to finish, merge, release, or deliver. It supports integration testing, regression verification, contract verification, end-to-end verification, release readiness checks, final verification before completion, development branch finishing, compliance checks, debugging, review preparation, and structured commits when explicitly requested.
+This plugin helps an agent prove that completed or near-completed work is safe to finish, merge, release, or deliver. It supports integration testing, regression verification, contract verification, end-to-end verification, release readiness checks, final verification before completion, development branch finishing, compliance checks, debugging, review preparation, structured commits when explicitly requested, and verification-session context preservation.
 
 ## When to use it
 
-Use this plugin when the user asks to verify completed work, run integration checks, confirm a bug fix did not regress, validate API or message compatibility, test a complete user flow, assess release readiness, finish a development branch, prepare verification evidence, or decide whether work is ready to report as done.
+Use this plugin when the user asks to verify completed work, run integration checks, confirm a bug fix did not regress, validate API or message compatibility, test a complete user flow, assess release readiness, finish a development branch, prepare verification evidence, decide whether work is ready to report as done, or preserve verification context for release and handoff.
 
 ## Primary entry skill
 
-Start with `integration-verification` unless the user explicitly asks for a narrower verification task. This skill is the plugin-level entry point and should decide whether the work needs integration, regression, contract, E2E, release-readiness, final-completion, branch-finishing, debugging, compliance, or review support.
+Start with `integration-verification` unless the user explicitly asks for a narrower verification task. This skill is the plugin-level entry point and should decide whether the work needs integration, regression, contract, E2E, release-readiness, final-completion, branch-finishing, debugging, compliance, review support, session context, or a combination.
 
 ## Skill selection guide
 
@@ -33,19 +33,20 @@ Start with `integration-verification` unless the user explicitly asks for a narr
 
 ## Inputs to collect
 
-Collect the change summary, requirements and design artifacts, implementation plan, code diff, test plan, existing test commands, build commands, API or message contracts, affected modules and services, environment availability, external dependency constraints, branch status, prior failures, bug reproduction steps, release criteria, and user authorization for running commands, branch operations, or commits.
+Collect the change summary, requirements and design artifacts, implementation plan, code diff, test plan, existing test commands, build commands, API or message contracts, affected modules and services, environment availability, external dependency constraints, branch status, prior failures, bug reproduction steps, release criteria, verification-session context, and user authorization for running commands, branch operations, or commits.
 
 If some environments, services, credentials, or dependencies are unavailable, record the limitation and verify what can be verified locally or by inspection.
 
 ## Typical workflow
 
-1. Start from `integration-verification` and identify the verification scope: integration, regression, contract, E2E, release readiness, branch finishing, or final completion.
-2. Read the relevant requirements, design, plan, code diff, tests, contracts, and prior command output before choosing verification steps.
+1. Start from `integration-verification` and identify the verification scope: integration, regression, contract, E2E, release readiness, branch finishing, final completion, or context preservation.
+2. Read the relevant requirements, design, plan, code diff, tests, contracts, prior command output, and preserved verification context before choosing verification steps.
 3. Use `integration-test-runner`, `regression-verification`, `contract-verification`, or `e2e-verification` based on the risk and artifact type.
 4. Use `systematic-debugging` when a verification command fails or evidence contradicts expectations.
 5. Use `code-compliance-check`, `doc-quality-evaluator`, and `requesting-code-review` as supporting checks when the task needs final readiness or review preparation.
 6. Use `release-readiness-check`, `verification-before-completion`, or `finishing-a-development-branch` before merge, release, delivery, or declaring work complete.
-7. Report pass/fail status with evidence, risks, blockers, limitations, and next actions.
+7. Use `session-context` when verification evidence, limitations, risks, or handoff notes need durable continuity.
+8. Report pass/fail status with evidence, risks, blockers, limitations, and next actions.
 
 ## Outputs to produce
 
@@ -57,16 +58,21 @@ Use local templates under `templates/` when generating verification artifacts. T
 - `docs/verification/release-readiness-report.md` for release readiness.
 - `docs/verification/final-verification-report.md` for completion evidence.
 - `docs/verification/branch-finish-report.md` for development branch closing checks.
+- Session-context summaries or archival notes when continuity is needed.
 
-Reports should include the verification scope, commands or inspections performed, relevant output, pass/fail conclusion, risks, blockers, unverified areas, and recommended next actions.
+Reports should include the verification scope, commands or inspections performed, relevant output, pass/fail conclusion, risks, blockers, unverified areas, recommended next actions, and preserved context when needed.
 
 ## Quality checks
 
-Never claim completion without evidence. Prefer command output, test results, build results, contract checks, code inspection notes, or documented environment limitations. Check that verification covers changed behavior, surrounding integration points, critical user flows, compatibility boundaries, release criteria, and known risk areas.
+Never claim completion without evidence. Prefer command output, test results, build results, contract checks, code inspection notes, or documented environment limitations. Check that verification covers changed behavior, surrounding integration points, critical user flows, compatibility boundaries, release criteria, known risk areas, and the accuracy of preserved verification context.
 
 ## Handoff
 
-Hand off the final result with a clear pass/fail conclusion, evidence, unresolved risks, blockers, and next actions. If failures are found, hand off to TDD development or debugging with reproduction steps, failing commands, relevant logs, and suspected impact.
+Hand off the final result with a clear pass/fail conclusion, evidence, unresolved risks, blockers, next actions, and any preserved verification context. If failures are found, hand off to TDD development or debugging with reproduction steps, failing commands, relevant logs, and suspected impact.
+
+## Maintenance reporting
+
+When reporting plugin maintenance updates, use Chinese sections: `变更摘要`, `修改文件列表`, and `具体内容变更`.
 
 ## Operating constraints
 

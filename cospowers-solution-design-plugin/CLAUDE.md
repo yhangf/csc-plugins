@@ -2,15 +2,15 @@
 
 ## What this plugin is for
 
-This plugin helps an agent turn approved requirements, PRDs, issue context, existing system context, or design goals into architecture and design artifacts. It covers system design, subsystem design, API and message contracts, architecture review, design change impact analysis, and cross-document consistency checks.
+This plugin helps an agent turn approved requirements, PRDs, issue context, existing system context, or design goals into architecture and design artifacts. It covers system design, subsystem design, API and message contracts, architecture review, design change impact analysis, cross-document consistency checks, design quality evaluation, and design-session context preservation.
 
 ## When to use it
 
-Use this plugin when the user asks to design a system, convert requirements into technical architecture, write subsystem or module design, define APIs or event contracts, review an existing design, analyze the effect of design changes, or check whether requirements, design documents, and contracts agree with each other.
+Use this plugin when the user asks to design a system, convert requirements into technical architecture, write subsystem or module design, define APIs or event contracts, review an existing design, analyze the effect of design changes, check whether requirements, design documents, and contracts agree with each other, or preserve design context for downstream planning and implementation.
 
 ## Primary entry skill
 
-Start with `solution-design` unless the user explicitly asks for a specific design task. This skill is the plugin-level entry point and should route the work toward system design, subsystem design, API contract design, review, change analysis, or consistency checking.
+Start with `solution-design` unless the user explicitly asks for a specific design task. This skill is the plugin-level entry point and should route the work toward system design, subsystem design, API contract design, review, change analysis, consistency checking, evaluation, session context, or a combination.
 
 ## Skill selection guide
 
@@ -30,19 +30,20 @@ Start with `solution-design` unless the user explicitly asks for a specific desi
 
 ## Inputs to collect
 
-Collect requirement documents, target users and flows, system boundaries, existing architecture, affected modules, data model expectations, API or event needs, deployment environment, external dependencies, scalability and performance targets, security and compliance constraints, compatibility needs, observability expectations, reliability requirements, and known trade-offs.
+Collect requirement documents, target users and flows, system boundaries, existing architecture, affected modules, data model expectations, API or event needs, deployment environment, external dependencies, scalability and performance targets, security and compliance constraints, compatibility needs, observability expectations, reliability requirements, known trade-offs, and any design-session context that should carry into planning or implementation.
 
 If the user provides handoff documents from requirements, planning, testing, or implementation work, read those documents and keep design decisions traceable to them.
 
 ## Typical workflow
 
-1. Start from `solution-design` and identify the design scope: system, subsystem, API contract, review, change analysis, or consistency check.
-2. Read provided requirement artifacts and existing system context before proposing a design.
+1. Start from `solution-design` and identify the design scope: system, subsystem, API contract, review, change analysis, consistency check, evaluation, or context preservation.
+2. Read provided requirement artifacts, existing system context, and preserved session context before proposing a design.
 3. Use `design-spec` for end-to-end architecture and system-level decisions.
 4. Use `subsystem-design-spec` for detailed module or service design after system boundaries are clear.
 5. Use `api-contract-design` when service boundaries, external interfaces, messages, OpenAPI, or AsyncAPI contracts are needed.
 6. Use review, change-analysis, consistency-check, and evaluator skills before treating design output as ready for downstream planning.
-7. Record assumptions, unresolved decisions, risks, alternatives considered, and validation needs.
+7. Use `session-context` when design decisions, risks, assumptions, or unresolved questions need durable handoff context.
+8. Record assumptions, unresolved decisions, risks, alternatives considered, and validation needs.
 
 ## Outputs to produce
 
@@ -55,16 +56,17 @@ Use local templates under `templates/` when generating design artifacts. Typical
 - `docs/design/architecture-review-report.md` for review findings.
 - `docs/design/design-change-impact.md` for design change impact analysis.
 - `docs/design/doc-consistency-report.md` for cross-document consistency results.
+- Session-context summaries or archival notes when continuity is needed.
 
 The exact path may vary if the user requests a different location, but outputs should be specific enough for task planning, implementation, and testing.
 
 ## Quality checks
 
-Use `sysdesign-evaluator`, `subsystem-evaluator`, and `doc-quality-evaluator` where appropriate. Check traceability to requirements, unclear boundaries, missing interfaces, incomplete data flow, unhandled errors, security gaps, performance risks, compatibility risks, deployment assumptions, inconsistent terminology, and contradictions across documents.
+Use `sysdesign-evaluator`, `subsystem-evaluator`, and `doc-quality-evaluator` where appropriate. Check traceability to requirements, unclear boundaries, missing interfaces, incomplete data flow, unhandled errors, security gaps, performance risks, compatibility risks, deployment assumptions, inconsistent terminology, contradictions across documents, and stale or incomplete session context.
 
 ## Handoff
 
-Hand off to task planning with design documents, contracts, assumptions, dependencies, risks, and validation needs. If test design is needed next, hand off API contracts, acceptance criteria, quality requirements, and risk areas to test generation.
+Hand off to task planning with design documents, contracts, assumptions, dependencies, risks, validation needs, and any preserved session context. If test design is needed next, hand off API contracts, acceptance criteria, quality requirements, and risk areas to test generation.
 
 ## Maintenance reporting
 

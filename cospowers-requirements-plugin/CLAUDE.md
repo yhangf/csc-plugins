@@ -2,15 +2,15 @@
 
 ## What this plugin is for
 
-This plugin helps an agent turn rough ideas, PRDs, issues, bug reports, customer feedback, or requirement changes into structured requirement artifacts. It separates user/business requirements from system requirements, supports requirement quality review, and analyzes requirement change impact.
+This plugin helps an agent turn rough ideas, PRDs, issues, bug reports, customer feedback, or requirement changes into structured requirement artifacts. It separates user/business requirements from system requirements, supports requirement quality review, analyzes requirement change impact, and preserves requirement-session context when workflows span multiple turns.
 
 ## When to use it
 
-Use this plugin when the user asks to clarify requirements, write requirement documents, analyze a feature request, transform business goals into system needs, review existing requirement documents, or evaluate the impact of changed scope, rules, acceptance criteria, constraints, or non-functional requirements.
+Use this plugin when the user asks to clarify requirements, write requirement documents, analyze a feature request, transform business goals into system needs, review existing requirement documents, evaluate the impact of changed scope, rules, acceptance criteria, constraints, or non-functional requirements, or summarize requirement-session context for handoff.
 
 ## Primary entry skill
 
-Start with `requirements-intake` unless the user explicitly asks for a narrower requirement task. This skill is the plugin-level intake path and should decide whether to produce user requirements, system requirements, review output, change-impact output, or a combination.
+Start with `requirements-intake` unless the user explicitly asks for a narrower requirement task. This skill is the plugin-level intake path and should decide whether to produce user requirements, system requirements, review output, change-impact output, session context, or a combination.
 
 ## Skill selection guide
 
@@ -21,7 +21,7 @@ Start with `requirements-intake` unless the user explicitly asks for a narrower 
 - `requirements-change-analysis`: Use when requirements have changed and the user needs impact analysis across scope, design, tests, delivery, or risks.
 - `aireq-evaluator`: Use to evaluate user/business requirement documents.
 - `sysreq-evaluator`: Use to evaluate system requirement documents.
-- `session-context`: Use to capture or restore requirement-session context when a multi-step workflow needs continuity.
+- `session-context`: Use to capture, restore, or archive requirement-session context when a multi-step workflow needs continuity.
 - `using-requirements-plugin`: Use when the user asks how to use this plugin or when an agent needs plugin-level workflow guidance.
 
 ## Inputs to collect
@@ -34,13 +34,14 @@ If the user provides handoff documents from other plugins or existing repository
 
 ## Typical workflow
 
-1. Start from `requirements-intake` and identify whether the request needs user requirements, system requirements, review, change analysis, or evaluation.
+1. Start from `requirements-intake` and identify whether the request needs user requirements, system requirements, review, change analysis, evaluation, or context preservation.
 2. Ask clarifying questions only for missing information that blocks a useful requirement artifact. Ask one targeted question at a time, inspect available context first, and offer options plus a recommended/default answer when useful.
 3. Use `requirement-analysis` for business/user-facing requirement structure.
 4. Use `system-requirement-analysis` to derive implementation-facing capabilities, constraints, interfaces, and quality requirements.
 5. Use `requirements-review`, `requirements-change-analysis`, `aireq-evaluator`, or `sysreq-evaluator` when the user asks for review, impact analysis, or quality scoring.
-6. Produce clear requirement documents and note assumptions, open questions, risks, and traceability links.
-7. Hand off the resulting requirement artifacts to solution design when the user is ready for architecture or technical design.
+6. Use `session-context` when the requirement workflow needs durable handoff context or later restoration.
+7. Produce clear requirement documents and note assumptions, open questions, risks, and traceability links.
+8. Hand off the resulting requirement artifacts to solution design when the user is ready for architecture or technical design.
 
 ## Outputs to produce
 
@@ -50,16 +51,21 @@ Use local templates under `templates/` when generating documents. Typical output
 - `docs/requirements/system-requirements.md` for system requirements.
 - `docs/requirements/requirements-review-report.md` for requirement review findings.
 - `docs/requirements/requirements-change-impact.md` for change-impact analysis.
+- Session-context summaries or archival notes when continuity is needed.
 
 The exact path may vary if the user requests a different location, but the output should remain structured, traceable, and suitable for handoff.
 
 ## Quality checks
 
-Use `aireq-evaluator` for user/business requirement quality and `sysreq-evaluator` for system requirement quality. Check for ambiguity, missing actors, missing acceptance criteria, conflicting rules, unstated constraints, unverifiable requirements, incomplete quality attributes, and unclear scope boundaries.
+Use `aireq-evaluator` for user/business requirement quality and `sysreq-evaluator` for system requirement quality. Check for ambiguity, missing actors, missing acceptance criteria, conflicting rules, unstated constraints, unverifiable requirements, incomplete quality attributes, unclear scope boundaries, and stale or incomplete session context.
 
 ## Handoff
 
-When requirements are complete enough, hand off to the solution-design stage with the generated requirement documents, assumptions, unresolved questions, impacted systems, constraints, and acceptance criteria. Do not require another cospowers plugin to be installed; simply provide artifacts that a later design workflow can consume.
+When requirements are complete enough, hand off to the solution-design stage with the generated requirement documents, assumptions, unresolved questions, impacted systems, constraints, acceptance criteria, and any preserved session context. Do not require another cospowers plugin to be installed; simply provide artifacts that a later design workflow can consume.
+
+## Maintenance reporting
+
+When reporting plugin maintenance updates, use Chinese sections: `变更摘要`, `修改文件列表`, and `具体内容变更`.
 
 ## Operating constraints
 

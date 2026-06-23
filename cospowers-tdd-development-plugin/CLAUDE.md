@@ -2,15 +2,15 @@
 
 ## What this plugin is for
 
-This plugin helps an agent implement, fix, debug, and review code using test-driven development and local engineering standards. It supports red-green-refactor execution, implementation-plan execution, systematic debugging, code compliance checks, code review preparation, implementation review, subagent-assisted development, git worktree workflows, and structured commits when explicitly requested.
+This plugin helps an agent implement, fix, debug, and review code using test-driven development and local engineering standards. It supports red-green-refactor execution, implementation-plan execution, systematic debugging, code compliance checks, code review preparation, implementation review, subagent-assisted development, git worktree workflows, structured commits when explicitly requested, and development-session context preservation.
 
 ## When to use it
 
-Use this plugin when the user asks to implement a feature, fix a bug, execute an implementation plan, write code using TDD, debug failing tests or runtime errors, check code compliance, prepare a code review request, coordinate subagents for development, work in isolated worktrees, or create a commit after implementation.
+Use this plugin when the user asks to implement a feature, fix a bug, execute an implementation plan, write code using TDD, debug failing tests or runtime errors, check code compliance, prepare a code review request, coordinate subagents for development, work in isolated worktrees, create a commit after implementation, or preserve development context for verification and handoff.
 
 ## Primary entry skill
 
-Start with `tdd-implementation` unless the user explicitly asks for a narrower development task. This skill is the plugin-level entry point and should decide whether the work needs strict TDD, plan execution, debugging, review, compliance checking, subagent coordination, worktree isolation, or commit preparation.
+Start with `tdd-implementation` unless the user explicitly asks for a narrower development task. This skill is the plugin-level entry point and should decide whether the work needs strict TDD, plan execution, debugging, review, compliance checking, subagent coordination, worktree isolation, commit preparation, session context, or a combination.
 
 ## Skill selection guide
 
@@ -30,20 +30,22 @@ Start with `tdd-implementation` unless the user explicitly asks for a narrower d
 
 ## Inputs to collect
 
-Collect the implementation goal, requirement or design documents, implementation plan, target files or modules, existing code context, relevant tests, expected behavior, reproduction steps for bugs, failing command output, target language and framework, coding/testing standards, branch/worktree constraints, and whether the user permits code edits, test execution, branch or worktree operations, and commits.
+Collect the implementation goal, requirement or design documents, implementation plan, target files or modules, existing code context, relevant tests, expected behavior, reproduction steps for bugs, failing command output, target language and framework, coding/testing standards, branch/worktree constraints, development-session context, and whether the user permits code edits, test execution, branch or worktree operations, and commits.
 
 For commits, require an explicit user request. Do not infer commit permission from implementation permission.
 
 ## Typical workflow
 
-1. Start from `tdd-implementation` and identify whether the task is new implementation, bug fix, debugging, plan execution, review, or commit preparation.
-2. Read the relevant requirements, plans, tests, and code before proposing or making code changes.
+1. Start from `tdd-implementation` and identify whether the task is new implementation, bug fix, debugging, plan execution, review, commit preparation, or context preservation.
+2. Read the relevant requirements, plans, tests, code, and preserved session context before proposing or making code changes.
 3. Use `test-driven-development` when TDD is possible: establish the failing test, make the minimum implementation, run tests, then refactor.
 4. Use `executing-plans` when a plan exists and keep progress aligned to the plan's acceptance criteria and validation commands.
 5. Use `systematic-debugging` when behavior is unclear or verification fails; diagnose root cause before changing approach.
-6. Use `code-compliance-check` and `implementation-review` after changes to verify standards and requirement satisfaction.
-7. Use `requesting-code-review` when preparing handoff for human or agent review.
-8. Use `spec-commit` only after the user explicitly asks for a commit and after checking the final diff and status.
+6. Use `subagent-driven-development` and `using-git-worktrees` only when the scope, risk, and user authorization justify parallel or isolated work.
+7. Use `code-compliance-check` and `implementation-review` after changes to verify standards and requirement satisfaction.
+8. Use `session-context` when implementation decisions, unresolved risks, or verification notes need durable handoff context.
+9. Use `requesting-code-review` when preparing handoff for human or agent review.
+10. Use `spec-commit` only after the user explicitly asks for a commit and after checking the final diff and status.
 
 ## Outputs to produce
 
@@ -57,16 +59,21 @@ Use local templates under `templates/` when generating development artifacts. Ty
 - Implementation review reports.
 - Code review request materials.
 - Commit messages or commits only when explicitly requested.
+- Session-context summaries or archival notes when continuity is needed.
 
 The exact files changed should be limited to what the user's task requires. Avoid unrelated refactors or speculative abstractions.
 
 ## Quality checks
 
-Run the validation commands required by the plan or repository context when permitted. Confirm tests fail for the expected reason before implementation when using TDD, and confirm they pass after the change. Check coding standards, testing standards, security-sensitive behavior, error handling at system boundaries, compatibility risks, and whether the implementation satisfies the original requirement without adding unrequested scope.
+Run the validation commands required by the plan or repository context when permitted. Confirm tests fail for the expected reason before implementation when using TDD, and confirm they pass after the change. Check coding standards, testing standards, security-sensitive behavior, error handling at system boundaries, compatibility risks, session-context accuracy, and whether the implementation satisfies the original requirement without adding unrequested scope.
 
 ## Handoff
 
-Hand off to integration verification with the code changes, tests added or updated, commands run, results, known risks, unresolved questions, and any contracts or behavior that should be verified across modules or services.
+Hand off to integration verification with the code changes, tests added or updated, commands run, results, known risks, unresolved questions, preserved session context, and any contracts or behavior that should be verified across modules or services.
+
+## Maintenance reporting
+
+When reporting plugin maintenance updates, use Chinese sections: `变更摘要`, `修改文件列表`, and `具体内容变更`.
 
 ## Operating constraints
 
